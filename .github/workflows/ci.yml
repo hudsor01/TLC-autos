@@ -61,6 +61,9 @@ jobs:
 
       - run: npx prisma generate
 
+      - name: Create SQLite database for build
+        run: npx prisma db push --skip-generate
+
       - run: npm run build
         env:
           AUTH_SECRET: ci-placeholder-secret
