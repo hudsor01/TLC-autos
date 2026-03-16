@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Car,
@@ -289,10 +290,11 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
       {/* Image placeholder */}
       <div className="relative aspect-[4/3] bg-muted">
         {vehicle.images.length > 0 ? (
-          <img
+          <Image
             src={vehicle.images[0]}
             alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
           />
         ) : (
           <div className="flex h-full items-center justify-center">

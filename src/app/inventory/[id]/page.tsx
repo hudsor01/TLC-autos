@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -15,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchInventory, fetchVehicleById } from "@/lib/inventory";
+import { fetchInventory } from "@/lib/inventory";
 import { CONTACT } from "@/lib/constants";
 
 interface PageProps {
@@ -63,12 +64,13 @@ export default async function VehicleDetailPage({ params }: PageProps) {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Image */}
-              <div className="aspect-video overflow-hidden rounded-lg bg-muted">
+              <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
                 {vehicle.images.length > 0 ? (
-                  <img
+                  <Image
                     src={vehicle.images[0]}
                     alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center">
@@ -86,12 +88,13 @@ export default async function VehicleDetailPage({ params }: PageProps) {
                   {vehicle.images.slice(1, 6).map((img, i) => (
                     <div
                       key={i}
-                      className="aspect-video overflow-hidden rounded-md bg-muted"
+                      className="relative aspect-video overflow-hidden rounded-md bg-muted"
                     >
-                      <img
+                      <Image
                         src={img}
                         alt={`${vehicle.year} ${vehicle.make} ${vehicle.model} - Photo ${i + 2}`}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   ))}

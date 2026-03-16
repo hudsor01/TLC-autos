@@ -36,7 +36,7 @@ const STATUS_OPTIONS = [
   "lost",
 ] as const;
 
-function statusBadgeVariant(
+export function statusBadgeVariant(
   status: string
 ): "default" | "secondary" | "destructive" | "outline" {
   switch (status) {
