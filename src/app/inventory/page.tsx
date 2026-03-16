@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { fetchInventory, getFilterOptions } from "@/lib/inventory";
 import { InventoryClient } from "./inventory-client";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Inventory",
   description:
