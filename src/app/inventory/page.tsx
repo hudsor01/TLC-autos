@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { fetchInventory, getFilterOptions } from "@/lib/frazer";
+import { fetchInventory, getFilterOptions } from "@/lib/inventory";
 import { InventoryClient } from "./inventory-client";
 
 export const metadata: Metadata = {

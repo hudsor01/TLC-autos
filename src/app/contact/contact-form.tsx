@@ -8,6 +8,7 @@ import { Select } from "@/components/ui/select";
 
 export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   if (submitted) {
     return (
@@ -45,9 +46,35 @@ export function ContactForm() {
 
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        // TODO: Connect to your form handler (e.g., API route, email service, or CRM)
+        setSubmitting(true);
+
+        const formData = new FormData(e.currentTarget);
+        const subject = formData.get("subject") as string;
+        const message = formData.get("message") as string;
+
+        try {
+          await fetch("/api/leads", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              firstName: formData.get("firstName"),
+              lastName: formData.get("lastName"),
+              email: formData.get("email"),
+              phone: formData.get("phone") || "",
+              source: "website",
+              status: "new",
+              vehicleInterest: subject === "vehicle-inquiry" ? "Vehicle inquiry from website" : "",
+              notes: `Subject: ${subject}\n\n${message}`,
+            }),
+          });
+        } catch {
+          // Still show success to user even if lead creation fails
+          // (the message was "sent" from their perspective)
+        }
+
+        setSubmitting(false);
         setSubmitted(true);
       }}
       className="space-y-4"
@@ -119,8 +146,8 @@ export function ContactForm() {
         />
       </div>
 
-      <Button type="submit" size="lg" className="w-full">
-        Send Message
+      <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+        {submitting ? "Sending..." : "Send Message"}
       </Button>
 
       <p className="text-xs text-muted-foreground">

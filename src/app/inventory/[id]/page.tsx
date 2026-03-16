@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchInventory } from "@/lib/frazer";
+import { fetchInventory, fetchVehicleById } from "@/lib/inventory";
 import { CONTACT } from "@/lib/constants";
 
 interface PageProps {

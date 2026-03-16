@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { Vehicle } from "@/lib/frazer";
+import type { Vehicle } from "@/lib/inventory";
 import { CONTACT } from "@/lib/constants";
 
 interface FilterOptions {
