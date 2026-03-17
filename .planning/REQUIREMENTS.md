@@ -103,33 +103,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | AUTH-01 | -- | Complete |
 | AUTH-02 | -- | Complete |
-| AUTH-03 | -- | Pending |
+| AUTH-03 | Phase 1 | Pending |
 | AUTH-04 | -- | Complete |
 | AUTH-05 | -- | Complete |
-| FORM-01 | -- | Pending |
-| FORM-02 | -- | Pending |
-| FORM-03 | -- | Pending |
-| FORM-04 | -- | Pending |
-| FORM-05 | -- | Pending |
+| FORM-01 | Phase 2 | Pending |
+| FORM-02 | Phase 2 | Pending |
+| FORM-03 | Phase 2 | Pending |
+| FORM-04 | Phase 2 | Pending |
+| FORM-05 | Phase 2 | Pending |
 | FORM-06 | -- | Complete |
-| DATA-01 | -- | Pending |
-| DATA-02 | -- | Pending |
-| DATA-03 | -- | Pending |
-| DATA-04 | -- | Pending |
-| DATA-05 | -- | Pending |
-| DASH-01 | -- | Pending |
-| DASH-02 | -- | Pending |
-| NOTF-01 | -- | Pending |
+| DATA-01 | Phase 3 | Pending |
+| DATA-02 | Phase 3 | Pending |
+| DATA-03 | Phase 3 | Pending |
+| DATA-04 | Phase 3 | Pending |
+| DATA-05 | Phase 3 | Pending |
+| DASH-01 | Phase 3 | Pending |
+| DASH-02 | Phase 3 | Pending |
+| NOTF-01 | Phase 1 | Pending |
 | MEDIA-01 | -- | Complete |
-| MEDIA-02 | -- | Pending |
-| MEDIA-03 | -- | Pending |
-| PUB-01 | -- | Pending |
-| PUB-02 | -- | Pending |
-| PUB-03 | -- | Pending |
-| PUB-04 | -- | Pending |
-| INFRA-01 | -- | Pending |
-| INFRA-02 | -- | Pending |
-| INFRA-03 | -- | Pending |
+| MEDIA-02 | Phase 2 | Pending |
+| MEDIA-03 | Phase 2 | Pending |
+| PUB-01 | Phase 4 | Pending |
+| PUB-02 | Phase 4 | Pending |
+| PUB-03 | Phase 4 | Pending |
+| PUB-04 | Phase 4 | Pending |
+| INFRA-01 | Phase 1 | Pending |
+| INFRA-02 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Pending |
 | INFRA-04 | -- | Complete |
 | INFRA-05 | -- | Complete |
 
@@ -137,8 +137,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 - v1 requirements: 31 total
 - Already complete: 9
 - Remaining: 22
-- Mapped to phases: 0 (pending roadmap)
+- Mapped to phases: 22/22
 
 ---
 *Requirements defined: 2026-03-17*
-*Last updated: 2026-03-17 after initial definition*
+*Last updated: 2026-03-17 after roadmap creation*
