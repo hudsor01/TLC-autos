@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,15 +21,15 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    const result = await signIn("credentials", {
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
-      redirect: false,
     });
 
     setLoading(false);
 
-    if (result?.error) {
+    if (authError) {
       setError("Invalid email or password");
     } else {
       router.push("/admin");

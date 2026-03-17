@@ -18,10 +18,9 @@ updates:
           - "react-dom"
           - "@types/react"
           - "@types/react-dom"
-      prisma:
+      supabase:
         patterns:
-          - "prisma"
-          - "@prisma/*"
+          - "@supabase/*"
       tailwind:
         patterns:
           - "tailwindcss"

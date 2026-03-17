@@ -1,45 +1,84 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
+import { camelKeys, snakeKeys } from "@/lib/utils";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
 export async function GET(_req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  const costs = await prisma.vehicleCost.findMany({
-    where: { vehicleId: id },
-    orderBy: { date: "desc" },
-  });
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
 
-  return NextResponse.json(costs);
+    const { data: costs, error } = await supabase
+      .from("vehicle_costs")
+      .select("*")
+      .eq("vehicle_id", id)
+      .order("date", { ascending: false });
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(camelKeys(costs));
+  } catch {
+    return NextResponse.json({ error: "Failed to fetch costs" }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  const body = await req.json();
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const supabase = await createClient();
 
-  const cost = await prisma.vehicleCost.create({
-    data: { ...body, vehicleId: id },
-  });
+    const dbData = snakeKeys(body);
+    dbData.vehicle_id = id;
 
-  // Update the vehicle's addedCosts total
-  const totalCosts = await prisma.vehicleCost.aggregate({
-    where: { vehicleId: id },
-    _sum: { amount: true },
-  });
+    const { data: cost, error } = await supabase
+      .from("vehicle_costs")
+      .insert(dbData)
+      .select()
+      .single();
 
-  const vehicle = await prisma.vehicle.findUnique({ where: { id } });
-  if (vehicle) {
-    const addedCosts = totalCosts._sum.amount || 0;
-    await prisma.vehicle.update({
-      where: { id },
-      data: {
-        addedCosts,
-        totalCost: vehicle.purchasePrice + vehicle.buyerFee + vehicle.lotFee + addedCosts,
-      },
-    });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Update the vehicle's added_costs total
+    const { data: allCosts } = await supabase
+      .from("vehicle_costs")
+      .select("amount")
+      .eq("vehicle_id", id);
+
+    const addedCosts = (allCosts ?? []).reduce(
+      (sum, c) => sum + Number(c.amount),
+      0
+    );
+
+    const { data: vehicle } = await supabase
+      .from("vehicles")
+      .select("purchase_price, buyer_fee, lot_fee")
+      .eq("id", id)
+      .single();
+
+    if (vehicle) {
+      await supabase
+        .from("vehicles")
+        .update({
+          added_costs: addedCosts,
+          total_cost:
+            Number(vehicle.purchase_price) +
+            Number(vehicle.buyer_fee) +
+            Number(vehicle.lot_fee) +
+            addedCosts,
+        })
+        .eq("id", id);
+    }
+
+    return NextResponse.json(camelKeys(cost), { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "Failed to create cost" }, { status: 500 });
   }
-
-  return NextResponse.json(cost, { status: 201 });
 }

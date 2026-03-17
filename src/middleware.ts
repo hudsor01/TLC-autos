@@ -1,8 +1,10 @@
-import NextAuth from "next-auth";
-import { authConfig } from "@/lib/auth.config";
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/lib/supabase/middleware";
 
-export default NextAuth(authConfig).auth;
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
+}
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/admin/:path*"],
 };

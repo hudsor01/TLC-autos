@@ -1,54 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
-import { auth } from "@/lib/auth";
-import { hashSync } from "bcryptjs";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET() {
-  const session = await auth();
-  if ((session?.user as { role?: string })?.role !== "admin") {
-    return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user?.user_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+    }
+
+    const admin = createAdminClient();
+    const { data: { users }, error } = await admin.auth.admin.listUsers();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const mapped = users.map((u) => ({
+      id: u.id,
+      email: u.email,
+      name: u.user_metadata?.name || "",
+      role: u.user_metadata?.role || "staff",
+      createdAt: u.created_at,
+    }));
+
+    return NextResponse.json(mapped);
+  } catch {
+    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
   }
-
-  const users = await prisma.user.findMany({
-    select: { id: true, email: true, name: true, role: true, createdAt: true },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return NextResponse.json(users);
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if ((session?.user as { role?: string })?.role !== "admin") {
-    return NextResponse.json({ error: "Admin access required" }, { status: 403 });
-  }
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-  const { email, name, password, role } = await req.json();
+    if (user?.user_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+    }
 
-  if (!email || !name || !password) {
-    return NextResponse.json(
-      { error: "Email, name, and password are required" },
-      { status: 400 }
-    );
-  }
+    const { email, name, password, role } = await req.json();
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    return NextResponse.json(
-      { error: "A user with this email already exists" },
-      { status: 409 }
-    );
-  }
+    if (!email || !name || !password) {
+      return NextResponse.json(
+        { error: "Email, name, and password are required" },
+        { status: 400 }
+      );
+    }
 
-  const user = await prisma.user.create({
-    data: {
+    const admin = createAdminClient();
+
+    const { data: newUser, error } = await admin.auth.admin.createUser({
       email,
-      name,
-      passwordHash: hashSync(password, 10),
-      role: role || "staff",
-    },
-    select: { id: true, email: true, name: true, role: true, createdAt: true },
-  });
+      password,
+      email_confirm: true,
+      user_metadata: { name, role: role || "staff" },
+    });
 
-  return NextResponse.json(user, { status: 201 });
+    if (error) {
+      if (error.message.includes("already")) {
+        return NextResponse.json(
+          { error: "A user with this email already exists" },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(
+      {
+        id: newUser.user.id,
+        email: newUser.user.email,
+        name,
+        role: role || "staff",
+        createdAt: newUser.user.created_at,
+      },
+      { status: 201 }
+    );
+  } catch {
+    return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+  }
 }

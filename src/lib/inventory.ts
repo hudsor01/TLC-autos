@@ -1,14 +1,9 @@
 /**
- * Inventory data layer — replaces the Frazer CRM integration.
- * Reads from the local Prisma/SQLite database instead of an external feed.
+ * Inventory data layer — public-facing vehicle queries via Supabase.
  */
 
-import { prisma } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
 
-/**
- * Public-facing Vehicle type — matches the original interface
- * used by inventory pages and the public API.
- */
 export interface Vehicle {
   id: string;
   stockNumber: string;
@@ -37,34 +32,43 @@ export interface Vehicle {
  * Fetch all available inventory for the public-facing site.
  */
 export async function fetchInventory(): Promise<Vehicle[]> {
-  const vehicles = await prisma.vehicle.findMany({
-    where: { status: "available" },
-    include: { images: { orderBy: { order: "asc" } } },
-    orderBy: { dateAdded: "desc" },
-  });
+  const supabase = await createClient();
+
+  const { data: vehicles, error } = await supabase
+    .from("vehicles")
+    .select("*, vehicle_images(url, sort_order)")
+    .eq("status", "available")
+    .order("date_added", { ascending: false });
+
+  if (error) throw error;
+  if (!vehicles) return [];
 
   return vehicles.map((v) => ({
     id: v.id,
-    stockNumber: v.stockNumber,
+    stockNumber: v.stock_number,
     vin: v.vin,
     year: v.year,
     make: v.make,
     model: v.model,
-    trim: v.trim,
-    bodyStyle: v.bodyStyle,
-    exteriorColor: v.exteriorColor,
-    interiorColor: v.interiorColor,
-    mileage: v.mileage,
-    price: v.sellingPrice,
-    description: v.description,
-    images: v.images.map((img) => img.url),
+    trim: v.trim ?? "",
+    bodyStyle: v.body_style ?? "",
+    exteriorColor: v.exterior_color ?? "",
+    interiorColor: v.interior_color ?? "",
+    mileage: v.mileage ?? 0,
+    price: Number(v.selling_price) || 0,
+    description: v.description ?? "",
+    images: (v.vehicle_images ?? [])
+      .sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)
+      .map((img: { url: string }) => img.url),
     status: v.status as "available" | "pending" | "sold",
-    transmission: v.transmission,
-    engine: v.engine,
-    drivetrain: v.drivetrain,
-    fuelType: v.fuelType,
-    features: JSON.parse(v.features) as string[],
-    dateAdded: v.dateAdded.toISOString().split("T")[0],
+    transmission: v.transmission ?? "",
+    engine: v.engine ?? "",
+    drivetrain: v.drivetrain ?? "",
+    fuelType: v.fuel_type ?? "",
+    features: Array.isArray(v.features) ? v.features as string[] : [],
+    dateAdded: v.date_added
+      ? new Date(v.date_added).toISOString().split("T")[0]
+      : "",
   }));
 }
 
@@ -72,35 +76,42 @@ export async function fetchInventory(): Promise<Vehicle[]> {
  * Fetch a single vehicle by ID (for detail pages).
  */
 export async function fetchVehicleById(id: string): Promise<Vehicle | null> {
-  const v = await prisma.vehicle.findUnique({
-    where: { id },
-    include: { images: { orderBy: { order: "asc" } } },
-  });
+  const supabase = await createClient();
 
-  if (!v) return null;
+  const { data: v, error } = await supabase
+    .from("vehicles")
+    .select("*, vehicle_images(url, sort_order)")
+    .eq("id", id)
+    .single();
+
+  if (error || !v) return null;
 
   return {
     id: v.id,
-    stockNumber: v.stockNumber,
+    stockNumber: v.stock_number,
     vin: v.vin,
     year: v.year,
     make: v.make,
     model: v.model,
-    trim: v.trim,
-    bodyStyle: v.bodyStyle,
-    exteriorColor: v.exteriorColor,
-    interiorColor: v.interiorColor,
-    mileage: v.mileage,
-    price: v.sellingPrice,
-    description: v.description,
-    images: v.images.map((img) => img.url),
+    trim: v.trim ?? "",
+    bodyStyle: v.body_style ?? "",
+    exteriorColor: v.exterior_color ?? "",
+    interiorColor: v.interior_color ?? "",
+    mileage: v.mileage ?? 0,
+    price: Number(v.selling_price) || 0,
+    description: v.description ?? "",
+    images: (v.vehicle_images ?? [])
+      .sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)
+      .map((img: { url: string }) => img.url),
     status: v.status as "available" | "pending" | "sold",
-    transmission: v.transmission,
-    engine: v.engine,
-    drivetrain: v.drivetrain,
-    fuelType: v.fuelType,
-    features: JSON.parse(v.features) as string[],
-    dateAdded: v.dateAdded.toISOString().split("T")[0],
+    transmission: v.transmission ?? "",
+    engine: v.engine ?? "",
+    drivetrain: v.drivetrain ?? "",
+    fuelType: v.fuel_type ?? "",
+    features: Array.isArray(v.features) ? v.features as string[] : [],
+    dateAdded: v.date_added
+      ? new Date(v.date_added).toISOString().split("T")[0]
+      : "",
   };
 }
 
