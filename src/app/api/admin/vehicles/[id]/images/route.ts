@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/supabase/auth-guard";
 import { camelKeys } from "@/lib/utils";
 
 interface RouteParams {
@@ -16,11 +16,25 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    // Validate file type and size
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json({ error: "File must be JPEG, PNG, WebP, or AVIF" }, { status: 400 });
+    }
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json({ error: "File must be under 10 MB" }, { status: 400 });
+    }
+
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
     // Upload to Supabase Storage
     const buffer = Buffer.from(await file.arrayBuffer());
-    const ext = file.name.split(".").pop() || "jpg";
+    const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"];
+    const rawExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const ext = ALLOWED_EXTENSIONS.includes(rawExt) ? rawExt : "jpg";
     const filePath = `${id}/${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
@@ -75,7 +89,8 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "imageId required" }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
     const { data: image, error: findError } = await supabase
       .from("vehicle_images")

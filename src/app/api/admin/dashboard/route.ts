@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/supabase/auth-guard";
 import { camelKeys } from "@/lib/utils";
 
 export async function GET() {
   try {
-    const supabase = await createClient();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
     const [
       { count: totalVehicles },

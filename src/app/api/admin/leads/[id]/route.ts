@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/supabase/auth-guard";
 import { camelKeys, snakeKeys } from "@/lib/utils";
 
 interface RouteParams {
@@ -9,7 +9,8 @@ interface RouteParams {
 export async function GET(_req: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
     const { data: lead, error } = await supabase
       .from("leads")
@@ -32,7 +33,8 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await req.json();
-    const supabase = await createClient();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
     const dbData = snakeKeys(body);
 
     const { data: lead, error } = await supabase
@@ -55,7 +57,8 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
 export async function DELETE(_req: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
     const { error } = await supabase.from("leads").delete().eq("id", id);
 

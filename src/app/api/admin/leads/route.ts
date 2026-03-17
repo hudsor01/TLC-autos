@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/supabase/auth-guard";
 import { camelKeys, snakeKeys } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
@@ -12,7 +12,8 @@ export async function GET(req: NextRequest) {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    const supabase = await createClient();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
     let query = supabase
       .from("leads")
@@ -64,7 +65,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const supabase = await createClient();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
     const dbData = snakeKeys(body);
 
     const { data: lead, error } = await supabase
