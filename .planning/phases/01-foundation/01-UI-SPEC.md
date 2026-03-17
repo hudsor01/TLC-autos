@@ -52,18 +52,18 @@ Source: Tailwind defaults already in use across `admin/layout.tsx` (p-4, p-6, ga
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px (text-sm) | 400 (normal) | 1.6 (from globals.css body) |
-| Label | 14px (text-sm) | 500 (medium) | 1.5 |
 | Heading | 18px (text-lg) | 600 (semibold) | 1.3 |
-| Display | clamp(2.25rem, 5vw, 3.75rem) | 800 (extrabold) | 1.1 |
 
-Additional scale from globals.css utility classes:
+Declared weights: 2 -- 400 (normal) and 600 (semibold).
+
+Additional scale from globals.css utility classes (pre-existing, not declared for Phase 1):
 - `.text-display`: clamp 36-60px, weight 800, line-height 1.1
 - `.text-headline`: clamp 24-36px, weight 700, line-height 1.2
 - `.text-title`: clamp 18-24px, weight 600, line-height 1.3
 - `.text-body-lg`: 18px, weight 400, line-height 1.7
 - `.text-caption`: 12px, weight 500, uppercase, letter-spacing 0.05em
 
-Phase 1 relevance: Toast notifications use Body size (14px). Admin sidebar nav uses text-sm (14px) weight 500. Page header uses text-lg (18px) weight 600. No new typography introduced.
+Phase 1 relevance: Toast notifications use Body size (14px) at weight 400. Admin sidebar nav uses text-sm (14px) at weight 400 (labels are styled identically to body text for Phase 1 purposes). Page header uses text-lg (18px) at weight 600. The Display role (weight 800, public-facing hero) is not touched in Phase 1 and is omitted from this contract. No new typography introduced.
 
 Source: `globals.css` sections 4-5, `admin/layout.tsx`
 
