@@ -26,7 +26,7 @@ export async function requireAdmin() {
   const result = await requireAuth();
   if (result.error) return result;
 
-  if (result.user.user_metadata?.role !== "admin") {
+  if (result.user.app_metadata?.role !== "admin") {
     return { ...result, error: NextResponse.json({ error: "Admin access required" }, { status: 403 }) };
   }
 

@@ -19,6 +19,14 @@ export function camelKeys<T>(obj: T): T {
   return result as T;
 }
 
+/**
+ * Sanitize a search string for use in PostgREST .or() filters.
+ * Strips characters that could manipulate filter syntax (commas, dots, parens, etc.).
+ */
+export function sanitizeSearch(input: string): string {
+  return input.replace(/[,.()"'\\]/g, "").trim().slice(0, 200);
+}
+
 /** Convert camelCase keys to snake_case (for frontend → Supabase). Non-recursive. */
 export function snakeKeys(obj: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = {};

@@ -18,7 +18,7 @@ export async function GET() {
       id: u.id,
       email: u.email,
       name: u.user_metadata?.name || "",
-      role: u.user_metadata?.role || "staff",
+      role: u.app_metadata?.role || "staff",
       createdAt: u.created_at,
     }));
 
@@ -48,7 +48,8 @@ export async function POST(req: NextRequest) {
       email,
       password,
       email_confirm: true,
-      user_metadata: { name, role: role || "staff" },
+      app_metadata: { role: role || "staff" },
+      user_metadata: { name },
     });
 
     if (error) {

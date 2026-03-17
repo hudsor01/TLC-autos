@@ -16,15 +16,19 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     const admin = createAdminClient();
 
     const updates: Record<string, unknown> = {};
-    const metaUpdates: Record<string, unknown> = {};
+    const userMeta: Record<string, unknown> = {};
+    const appMeta: Record<string, unknown> = {};
 
     if (body.email) updates.email = body.email;
     if (body.password) updates.password = body.password;
-    if (body.name) metaUpdates.name = body.name;
-    if (body.role) metaUpdates.role = body.role;
+    if (body.name) userMeta.name = body.name;
+    if (body.role) appMeta.role = body.role;
 
-    if (Object.keys(metaUpdates).length > 0) {
-      updates.user_metadata = metaUpdates;
+    if (Object.keys(userMeta).length > 0) {
+      updates.user_metadata = userMeta;
+    }
+    if (Object.keys(appMeta).length > 0) {
+      updates.app_metadata = appMeta;
     }
 
     const { data: updated, error } = await admin.auth.admin.updateUserById(id, updates);
@@ -37,7 +41,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       id: updated.user.id,
       email: updated.user.email,
       name: updated.user.user_metadata?.name || "",
-      role: updated.user.user_metadata?.role || "staff",
+      role: updated.user.app_metadata?.role || "staff",
       createdAt: updated.user.created_at,
     });
   } catch {

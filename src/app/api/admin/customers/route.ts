@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/supabase/auth-guard";
-import { camelKeys, snakeKeys } from "@/lib/utils";
+import { camelKeys, sanitizeSearch, snakeKeys } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const search = searchParams.get("search") || "";
+    const search = sanitizeSearch(searchParams.get("search") || "");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const from = (page - 1) * limit;
