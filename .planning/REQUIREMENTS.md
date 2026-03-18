@@ -17,11 +17,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Forms & Validation (FORM)
 
-- [ ] **FORM-01**: Vehicle form uses @tanstack/react-form with Zod validation and field-level errors
+- [x] **FORM-01**: Vehicle form uses @tanstack/react-form with Zod validation and field-level errors
 - [ ] **FORM-02**: Customer form uses @tanstack/react-form with Zod validation
 - [ ] **FORM-03**: Lead form uses @tanstack/react-form with Zod validation
 - [ ] **FORM-04**: Deal form uses @tanstack/react-form with Zod validation
-- [ ] **FORM-05**: All admin API routes validate input with Zod schemas
+- [x] **FORM-05**: All admin API routes validate input with Zod schemas
 - [x] **FORM-06**: Public leads API route validates input with Zod schema
 
 ### Data Tables (DATA)
@@ -44,8 +44,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Media (MEDIA)
 
 - [x] **MEDIA-01**: Vehicle images upload to Supabase Storage with MIME/size/extension validation
-- [ ] **MEDIA-02**: Vehicle images can be reordered and deleted in admin
-- [ ] **MEDIA-03**: Primary image selection for vehicle listings
+- [x] **MEDIA-02**: Vehicle images can be reordered and deleted in admin
+- [x] **MEDIA-03**: Primary image selection for vehicle listings
 
 ### Public Site (PUB)
 
@@ -106,11 +106,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | -- | Complete |
 | AUTH-05 | -- | Complete |
-| FORM-01 | Phase 2 | Pending |
+| FORM-01 | Phase 2 | Complete |
 | FORM-02 | Phase 2 | Pending |
 | FORM-03 | Phase 2 | Pending |
 | FORM-04 | Phase 2 | Pending |
-| FORM-05 | Phase 2 | Pending |
+| FORM-05 | Phase 2 | Complete |
 | FORM-06 | -- | Complete |
 | DATA-01 | Phase 3 | Pending |
 | DATA-02 | Phase 3 | Pending |
@@ -121,8 +121,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DASH-02 | Phase 3 | Pending |
 | NOTF-01 | Phase 1 | Complete |
 | MEDIA-01 | -- | Complete |
-| MEDIA-02 | Phase 2 | Pending |
-| MEDIA-03 | Phase 2 | Pending |
+| MEDIA-02 | Phase 2 | Complete |
+| MEDIA-03 | Phase 2 | Complete |
 | PUB-01 | Phase 4 | Pending |
 | PUB-02 | Phase 4 | Pending |
 | PUB-03 | Phase 4 | Pending |

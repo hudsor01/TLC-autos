@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/supabase/auth-guard";
+import { validateRequest } from "@/lib/api-validation";
+import { dealSchema } from "@/lib/schemas";
 import { camelKeys, snakeKeys } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
@@ -58,6 +60,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { supabase, error: authError } = await requireAuth();
     if (authError) return authError;
+
+    const validation = validateRequest(dealSchema, body);
+    if (!validation.success) return validation.response;
 
     // Auto-generate deal number
     if (!body.dealNumber) {

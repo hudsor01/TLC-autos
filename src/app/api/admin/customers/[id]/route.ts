@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/supabase/auth-guard";
+import { validateRequest } from "@/lib/api-validation";
+import { customerSchema } from "@/lib/schemas";
 import { camelKeys, snakeKeys } from "@/lib/utils";
 
 interface RouteParams {
@@ -38,7 +40,10 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     const body = await req.json();
     const { supabase, error: authError } = await requireAuth();
     if (authError) return authError;
-    const dbData = snakeKeys(body);
+
+    const validation = validateRequest(customerSchema, body);
+    if (!validation.success) return validation.response;
+    const dbData = snakeKeys(validation.data);
 
     const { data: customer, error } = await supabase
       .from("customers")

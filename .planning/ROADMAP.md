@@ -13,7 +13,7 @@ TLC Autos is a brownfield project with a working Next.js shell, Supabase migrati
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Infrastructure, types, seed data, RLS, logout, and toast system (completed 2026-03-18)
-- [ ] **Phase 2: Admin Forms** - Validated CRUD forms for all entities with image management
+- [x] **Phase 2: Admin Forms** - Validated CRUD forms for all entities with image management (completed 2026-03-18)
 - [ ] **Phase 3: Admin Data & Dashboard** - Data tables, URL-synced filters, and analytics charts
 - [ ] **Phase 4: Public Site** - Customer-facing inventory browsing, vehicle details, and contact form
 
@@ -46,7 +46,7 @@ Plans:
   3. Submitting any form to an admin API route with malformed JSON returns a structured Zod validation error (not a 500)
   4. Staff can reorder vehicle images via the admin form and select which image appears as the primary listing photo
   5. Staff can delete individual vehicle images from the admin form
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 Plans:
 - [ ] 02-01-PLAN.md -- TDD shared infrastructure: Zod schemas, API validation helper, deal calculations, FormField + SearchableSelect components, vitest setup
@@ -63,11 +63,12 @@ Plans:
   2. Applying a filter on any admin table updates the URL -- copying that URL into a new tab restores the exact filter state
   3. Dashboard displays key metrics: total vehicles in inventory, active leads count, recent deals count, and total revenue
   4. Dashboard shows at least two Recharts visualizations (sales trend over time, and one of: inventory aging, lead funnel, or deals by status)
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md -- Shared DataTable infrastructure, useTableFilters hook, NuqsAdapter, API sort params
+- [ ] 03-02-PLAN.md -- Rewrite vehicles, customers, leads, deals list pages with DataTable + URL filters
+- [ ] 03-03-PLAN.md -- Dashboard metrics with revenue, Recharts sales trend and inventory status charts
 
 ### Phase 4: Public Site
 **Goal**: Customers can browse the full vehicle inventory with filters, view detailed vehicle pages with all images, and submit contact inquiries -- all with shareable URLs
@@ -91,6 +92,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
-| 2. Admin Forms | 0/4 | Planned | - |
-| 3. Admin Data & Dashboard | 0/TBD | Not started | - |
+| 2. Admin Forms | 4/4 | Complete   | 2026-03-18 |
+| 3. Admin Data & Dashboard | 0/3 | In Progress | - |
 | 4. Public Site | 0/TBD | Not started | - |

@@ -137,3 +137,38 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Failed to delete image" }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
+
+    if (body.images && Array.isArray(body.images)) {
+      for (const img of body.images) {
+        await supabase
+          .from("vehicle_images")
+          .update({ sort_order: img.sortOrder })
+          .eq("id", img.id)
+          .eq("vehicle_id", id);
+      }
+    }
+
+    if (body.primaryImageId) {
+      await supabase
+        .from("vehicle_images")
+        .update({ is_primary: false })
+        .eq("vehicle_id", id);
+      await supabase
+        .from("vehicle_images")
+        .update({ is_primary: true })
+        .eq("id", body.primaryImageId)
+        .eq("vehicle_id", id);
+    }
+
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to update images" }, { status: 500 });
+  }
+}
