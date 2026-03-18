@@ -11,7 +11,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **AUTH-01**: Staff can log in with email/password via Supabase Auth
 - [x] **AUTH-02**: Staff session persists across browser refresh via @supabase/ssr cookies
-- [ ] **AUTH-03**: Staff can log out from any page
+- [x] **AUTH-03**: Staff can log out from any page
 - [x] **AUTH-04**: Admin can create/edit/delete staff accounts via admin API
 - [x] **AUTH-05**: Role-based access (admin vs staff) enforced via app_metadata + middleware + route guards
 
@@ -39,7 +39,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Notifications (NOTF)
 
-- [ ] **NOTF-01**: All CRUD operations show toast feedback via Sonner (success, error, loading)
+- [x] **NOTF-01**: All CRUD operations show toast feedback via Sonner (success, error, loading)
 
 ### Media (MEDIA)
 
@@ -103,7 +103,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | AUTH-01 | -- | Complete |
 | AUTH-02 | -- | Complete |
-| AUTH-03 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | -- | Complete |
 | AUTH-05 | -- | Complete |
 | FORM-01 | Phase 2 | Pending |
@@ -119,7 +119,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-05 | Phase 3 | Pending |
 | DASH-01 | Phase 3 | Pending |
 | DASH-02 | Phase 3 | Pending |
-| NOTF-01 | Phase 1 | Pending |
+| NOTF-01 | Phase 1 | Complete |
 | MEDIA-01 | -- | Complete |
 | MEDIA-02 | Phase 2 | Pending |
 | MEDIA-03 | Phase 2 | Pending |
