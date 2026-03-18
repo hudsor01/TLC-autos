@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Providers } from "./providers";
 import { SITE_NAME, SITE_DESCRIPTION } from "@/lib/constants";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -33,7 +34,7 @@ export default function RootLayout({
       <body className="antialiased">
         <div className="flex min-h-screen flex-col">
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1"><Providers>{children}</Providers></main>
           <Footer />
         </div>
         <Toaster position="bottom-right" closeButton richColors />
