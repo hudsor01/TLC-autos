@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/supabase/auth-guard";
+import { validateRequest } from "@/lib/api-validation";
+import { vehicleSchema } from "@/lib/schemas";
 import { camelKeys, sanitizeSearch, snakeKeys } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
@@ -65,8 +67,12 @@ export async function POST(req: NextRequest) {
     const { supabase, error: authError } = await requireAuth();
     if (authError) return authError;
 
+    const validation = validateRequest(vehicleSchema, body);
+    if (!validation.success) return validation.response;
+    const validatedBody = validation.data;
+
     // Auto-generate stock number if not provided
-    if (!body.stockNumber) {
+    if (!validatedBody.stockNumber) {
       const { data: last } = await supabase
         .from("vehicles")
         .select("stock_number")
@@ -77,17 +83,16 @@ export async function POST(req: NextRequest) {
       const lastNum = last
         ? parseInt(last.stock_number.replace(/\D/g, "")) || 0
         : 0;
-      body.stockNumber = `TLC-${String(lastNum + 1).padStart(3, "0")}`;
+      validatedBody.stockNumber = `TLC-${String(lastNum + 1).padStart(3, "0")}`;
     }
 
     // Calculate total cost
-    body.totalCost =
-      (body.purchasePrice || 0) +
-      (body.buyerFee || 0) +
-      (body.lotFee || 0) +
-      (body.addedCosts || 0);
+    const totalCost =
+      (validatedBody.purchasePrice || 0) +
+      (validatedBody.buyerFee || 0) +
+      (validatedBody.lotFee || 0);
 
-    const dbData = snakeKeys(body);
+    const dbData = snakeKeys({ ...validatedBody, totalCost });
 
     const { data: vehicle, error } = await supabase
       .from("vehicles")
