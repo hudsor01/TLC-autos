@@ -30,7 +30,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DATA-02**: Customers list uses @tanstack/react-table with sorting, filtering, pagination
 - [ ] **DATA-03**: Leads list uses @tanstack/react-table with sorting, filtering, pagination
 - [ ] **DATA-04**: Deals list uses @tanstack/react-table with sorting, filtering, pagination
-- [ ] **DATA-05**: Table filters sync to URL via nuqs (shareable/bookmarkable)
+- [x] **DATA-05**: Table filters sync to URL via nuqs (shareable/bookmarkable)
 
 ### Dashboard (DASH)
 
@@ -116,7 +116,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-02 | Phase 3 | Pending |
 | DATA-03 | Phase 3 | Pending |
 | DATA-04 | Phase 3 | Pending |
-| DATA-05 | Phase 3 | Pending |
+| DATA-05 | Phase 3 | Complete |
 | DASH-01 | Phase 3 | Pending |
 | DASH-02 | Phase 3 | Pending |
 | NOTF-01 | Phase 1 | Complete |
