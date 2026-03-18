@@ -27,8 +27,13 @@ export async function GET(req: NextRequest) {
       query = query.eq("status", status);
     }
 
+    const sortBy = searchParams.get("sort") || "sale_date";
+    const sortOrder = searchParams.get("order") || "desc";
+    const ALLOWED_SORT = ["sale_date", "status", "total_price", "sale_type", "deal_number"];
+    const validSort = ALLOWED_SORT.includes(sortBy) ? sortBy : "sale_date";
+
     const { data: deals, count, error } = await query
-      .order("sale_date", { ascending: false })
+      .order(validSort, { ascending: sortOrder === "asc" })
       .range(from, to);
 
     if (error) {
