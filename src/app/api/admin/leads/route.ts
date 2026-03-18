@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/supabase/auth-guard";
+import { validateRequest } from "@/lib/api-validation";
+import { leadSchema } from "@/lib/schemas";
 import { camelKeys, sanitizeSearch, snakeKeys } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
@@ -67,11 +69,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { supabase, error: authError } = await requireAuth();
     if (authError) return authError;
-    const dbData = snakeKeys(body);
+
+    const validation = validateRequest(leadSchema, body);
+    if (!validation.success) return validation.response;
+    const dbData = snakeKeys(validation.data);
 
     const { data: lead, error } = await supabase
       .from("leads")
-      .insert(dbData)
+      .insert(dbData as never)
       .select()
       .single();
 
