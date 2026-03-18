@@ -79,10 +79,11 @@ Plans:
   2. A customer can click a vehicle and see all uploaded images plus full specs on the detail page
   3. A customer can submit a contact form that validates input client-side and creates a lead record in the database
   4. Inventory page filter state is encoded in the URL -- sharing the link preserves the active filters
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md -- NuqsAdapter provider, public inventory API with server-side filtering, inventory page rewrite with nuqs URL filters and pagination
+- [ ] 04-02-PLAN.md -- Vehicle detail page with ImageGallery (hero + thumbnails + lightbox), contact form with Zod validation
 
 ## Progress
 
@@ -94,4 +95,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
 | 2. Admin Forms | 4/4 | Complete   | 2026-03-18 |
 | 3. Admin Data & Dashboard | 0/3 | In Progress | - |
-| 4. Public Site | 0/TBD | Not started | - |
+| 4. Public Site | 0/2 | Not started | - |
