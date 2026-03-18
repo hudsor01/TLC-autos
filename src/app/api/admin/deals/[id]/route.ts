@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/supabase/auth-guard";
+import { validateRequest } from "@/lib/api-validation";
+import { dealSchema } from "@/lib/schemas";
 import { camelKeys, snakeKeys } from "@/lib/utils";
 
 interface RouteParams {
@@ -40,6 +42,13 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     const { supabase, error: authError } = await requireAuth();
     if (authError) return authError;
 
+    // Validate with dealSchema for full form updates (not status-only transitions)
+    const isStatusOnly = Object.keys(body).length === 1 && body.status;
+    if (!isStatusOnly) {
+      const validation = validateRequest(dealSchema, body);
+      if (!validation.success) return validation.response;
+    }
+
     // Handle status transitions
     if (body.status === "completed" || body.status === "voided") {
       const { data: existing } = await supabase
@@ -63,11 +72,11 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       }
     }
 
-    const dbData = snakeKeys(body);
+    const dbData = snakeKeys(body) as Record<string, unknown>;
 
     const { data: deal, error } = await supabase
       .from("deals")
-      .update(dbData)
+      .update(dbData as never)
       .eq("id", id)
       .select()
       .single();
