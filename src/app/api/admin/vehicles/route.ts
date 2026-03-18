@@ -1,69 +1,106 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/supabase/auth-guard";
+import { camelKeys, sanitizeSearch, snakeKeys } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const search = searchParams.get("search") || "";
-  const status = searchParams.get("status") || "";
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "20");
-  const skip = (page - 1) * limit;
+  try {
+    const { searchParams } = new URL(req.url);
+    const search = sanitizeSearch(searchParams.get("search") || "");
+    const status = searchParams.get("status") || "";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
-  const where: Record<string, unknown> = {};
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
-  if (status) {
-    where.status = status;
+    let query = supabase
+      .from("vehicles")
+      .select("*, vehicle_images(url, alt, is_primary, sort_order)", { count: "exact" });
+
+    if (status) {
+      query = query.eq("status", status);
+    }
+
+    if (search) {
+      query = query.or(
+        `make.ilike.%${search}%,model.ilike.%${search}%,stock_number.ilike.%${search}%,vin.ilike.%${search}%`
+      );
+    }
+
+    const { data: vehicles, count, error } = await query
+      .order("date_added", { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const total = count ?? 0;
+
+    // Transform: extract primary image, convert to camelCase
+    const transformed = (vehicles ?? []).map((v) => {
+      const { vehicle_images, ...rest } = v;
+      const images = vehicle_images as { url: string; alt: string; is_primary: boolean; sort_order: number }[];
+      const primary = images?.find((img) => img.is_primary) ?? images?.[0];
+      return {
+        ...camelKeys(rest),
+        images: primary ? [{ url: primary.url, alt: primary.alt }] : [],
+      };
+    });
+
+    return NextResponse.json({
+      vehicles: transformed,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  } catch {
+    return NextResponse.json({ error: "Failed to fetch vehicles" }, { status: 500 });
   }
-
-  if (search) {
-    where.OR = [
-      { make: { contains: search } },
-      { model: { contains: search } },
-      { stockNumber: { contains: search } },
-      { vin: { contains: search } },
-    ];
-  }
-
-  const [vehicles, total] = await Promise.all([
-    prisma.vehicle.findMany({
-      where,
-      include: { images: { where: { isPrimary: true }, take: 1 } },
-      orderBy: { dateAdded: "desc" },
-      skip,
-      take: limit,
-    }),
-    prisma.vehicle.count({ where }),
-  ]);
-
-  return NextResponse.json({
-    vehicles,
-    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-  });
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  try {
+    const body = await req.json();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
-  // Auto-generate stock number if not provided
-  if (!body.stockNumber) {
-    const lastVehicle = await prisma.vehicle.findFirst({
-      orderBy: { stockNumber: "desc" },
-      select: { stockNumber: true },
-    });
-    const lastNum = lastVehicle
-      ? parseInt(lastVehicle.stockNumber.replace(/\D/g, "")) || 0
-      : 0;
-    body.stockNumber = `TLC-${String(lastNum + 1).padStart(3, "0")}`;
+    // Auto-generate stock number if not provided
+    if (!body.stockNumber) {
+      const { data: last } = await supabase
+        .from("vehicles")
+        .select("stock_number")
+        .order("stock_number", { ascending: false })
+        .limit(1)
+        .single();
+
+      const lastNum = last
+        ? parseInt(last.stock_number.replace(/\D/g, "")) || 0
+        : 0;
+      body.stockNumber = `TLC-${String(lastNum + 1).padStart(3, "0")}`;
+    }
+
+    // Calculate total cost
+    body.totalCost =
+      (body.purchasePrice || 0) +
+      (body.buyerFee || 0) +
+      (body.lotFee || 0) +
+      (body.addedCosts || 0);
+
+    const dbData = snakeKeys(body);
+
+    const { data: vehicle, error } = await supabase
+      .from("vehicles")
+      .insert(dbData as never)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(camelKeys(vehicle), { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "Failed to create vehicle" }, { status: 500 });
   }
-
-  // Calculate total cost
-  body.totalCost =
-    (body.purchasePrice || 0) +
-    (body.buyerFee || 0) +
-    (body.lotFee || 0) +
-    (body.addedCosts || 0);
-
-  const vehicle = await prisma.vehicle.create({ data: body });
-
-  return NextResponse.json(vehicle, { status: 201 });
 }

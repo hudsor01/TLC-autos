@@ -1,69 +1,115 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/supabase/auth-guard";
+import { camelKeys, snakeKeys } from "@/lib/utils";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
 export async function GET(_req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  const deal = await prisma.deal.findUnique({
-    where: { id },
-    include: {
-      vehicle: true,
-      customer: true,
-    },
-  });
+  try {
+    const { id } = await params;
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
-  if (!deal) {
-    return NextResponse.json({ error: "Deal not found" }, { status: 404 });
+    const { data: deal, error } = await supabase
+      .from("deals")
+      .select("*, vehicles(*), customers(*)")
+      .eq("id", id)
+      .single();
+
+    if (error || !deal) {
+      return NextResponse.json({ error: "Deal not found" }, { status: 404 });
+    }
+
+    const { vehicles, customers, ...rest } = deal;
+    return NextResponse.json({
+      ...camelKeys(rest),
+      vehicle: vehicles ? camelKeys(vehicles) : null,
+      customer: customers ? camelKeys(customers) : null,
+    });
+  } catch {
+    return NextResponse.json({ error: "Failed to fetch deal" }, { status: 500 });
   }
-
-  return NextResponse.json(deal);
 }
 
 export async function PUT(req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  const body = await req.json();
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
-  // If completing a deal, mark vehicle as sold
-  if (body.status === "completed") {
-    const deal = await prisma.deal.findUnique({ where: { id } });
-    if (deal) {
-      await prisma.vehicle.update({
-        where: { id: deal.vehicleId },
-        data: { status: "sold", dateSold: new Date() },
-      });
+    // Handle status transitions
+    if (body.status === "completed" || body.status === "voided") {
+      const { data: existing } = await supabase
+        .from("deals")
+        .select("vehicle_id")
+        .eq("id", id)
+        .single();
+
+      if (existing) {
+        if (body.status === "completed") {
+          await supabase
+            .from("vehicles")
+            .update({ status: "sold", date_sold: new Date().toISOString() })
+            .eq("id", existing.vehicle_id);
+        } else {
+          await supabase
+            .from("vehicles")
+            .update({ status: "available", date_sold: null })
+            .eq("id", existing.vehicle_id);
+        }
+      }
     }
-  }
 
-  // If voiding a deal, set vehicle back to available
-  if (body.status === "voided") {
-    const deal = await prisma.deal.findUnique({ where: { id } });
-    if (deal) {
-      await prisma.vehicle.update({
-        where: { id: deal.vehicleId },
-        data: { status: "available", dateSold: null },
-      });
+    const dbData = snakeKeys(body);
+
+    const { data: deal, error } = await supabase
+      .from("deals")
+      .update(dbData)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
-  }
 
-  const deal = await prisma.deal.update({ where: { id }, data: body });
-  return NextResponse.json(deal);
+    return NextResponse.json(camelKeys(deal));
+  } catch {
+    return NextResponse.json({ error: "Failed to update deal" }, { status: 500 });
+  }
 }
 
 export async function DELETE(_req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
-  // Set vehicle back to available
-  const deal = await prisma.deal.findUnique({ where: { id } });
-  if (deal) {
-    await prisma.vehicle.update({
-      where: { id: deal.vehicleId },
-      data: { status: "available", dateSold: null },
-    });
+    // Set vehicle back to available
+    const { data: deal } = await supabase
+      .from("deals")
+      .select("vehicle_id")
+      .eq("id", id)
+      .single();
+
+    if (deal) {
+      await supabase
+        .from("vehicles")
+        .update({ status: "available", date_sold: null })
+        .eq("id", deal.vehicle_id);
+    }
+
+    const { error } = await supabase.from("deals").delete().eq("id", id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to delete deal" }, { status: 500 });
   }
-
-  await prisma.deal.delete({ where: { id } });
-  return NextResponse.json({ success: true });
 }

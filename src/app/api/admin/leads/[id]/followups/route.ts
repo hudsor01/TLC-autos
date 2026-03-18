@@ -1,27 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/supabase/auth-guard";
+import { camelKeys, snakeKeys } from "@/lib/utils";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
 export async function GET(_req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  const followUps = await prisma.followUp.findMany({
-    where: { leadId: id },
-    orderBy: { createdAt: "desc" },
-  });
+  try {
+    const { id } = await params;
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
-  return NextResponse.json(followUps);
+    const { data: followUps, error } = await supabase
+      .from("follow_ups")
+      .select("*")
+      .eq("lead_id", id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(camelKeys(followUps));
+  } catch {
+    return NextResponse.json({ error: "Failed to fetch follow-ups" }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  const body = await req.json();
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
-  const followUp = await prisma.followUp.create({
-    data: { ...body, leadId: id },
-  });
+    const dbData = snakeKeys(body);
+    dbData.lead_id = id;
 
-  return NextResponse.json(followUp, { status: 201 });
+    const { data: followUp, error } = await supabase
+      .from("follow_ups")
+      .insert(dbData as never)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(camelKeys(followUp), { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "Failed to create follow-up" }, { status: 500 });
+  }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Car,
@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -29,7 +30,15 @@ const NAV_ITEMS = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  }
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
@@ -88,13 +97,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground">
             View Public Site
           </Link>
-          <Link
-            href="/api/auth/signout"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+          <button
+            onClick={handleSignOut}
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
           >
             <LogOut className="h-4 w-4" />
             Sign Out
-          </Link>
+          </button>
         </div>
       </aside>
 

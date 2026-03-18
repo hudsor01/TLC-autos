@@ -9,15 +9,5 @@ pre-commit:
     typecheck:
       run: npx tsc --noEmit
 
-    prisma-generate:
-      glob: "prisma/schema.prisma"
-      run: npx prisma generate
-
-    db-push:
-      glob: "prisma/schema.prisma"
-      run: npx prisma db push --skip-generate
-
     build:
       run: npm run build
-      env:
-        AUTH_SECRET: local-dev-secret
