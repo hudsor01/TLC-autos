@@ -32,14 +32,14 @@ Declared values (must be multiples of 4):
 | Token | Value | Usage |
 |-------|-------|-------|
 | xs | 4px | Icon gaps, inline label-to-input spacing |
-| sm | 8px | Compact element spacing, input internal padding |
+| sm | 8px | Compact element spacing, input internal padding, image thumbnail grid gap |
 | md | 16px | Default gap between form fields, card internal padding |
 | lg | 24px | Section padding within Card components |
 | xl | 32px | Gap between form section Cards |
 | 2xl | 48px | Page top/bottom padding |
 | 3xl | 64px | Not used in this phase |
 
-Exceptions: Image thumbnails in the Images Card use 12px gap (3 * 4px) between grid items for tighter visual grouping.
+No exceptions. All spacing uses the standard scale.
 
 ---
 
@@ -48,7 +48,7 @@ Exceptions: Image thumbnails in the Images Card use 12px gap (3 * 4px) between g
 | Role | Size | Weight | Line Height | Usage in this phase |
 |------|------|--------|-------------|---------------------|
 | Body | 14px (text-sm) | 400 (normal) | 1.5 | Form field values, helper text, table cell text |
-| Label | 14px (text-sm) | 500 (medium) | 1.4 | Form field labels, Card header descriptions |
+| Label | 14px (text-sm) | 400 (normal) | 1.4 | Form field labels, Card header descriptions |
 | Heading | 18px (text-lg) | 600 (semibold) | 1.3 | Card section titles (Vehicle Info, Pricing, Images) |
 | Page title | 24px (text-2xl) | 600 (semibold) | 1.2 | Page headings (Add Vehicle, Edit Customer) |
 
@@ -119,6 +119,8 @@ Error state border: inputs with validation errors use `border-destructive` (repl
 
 ### Vehicle Form Sections (single scrollable page)
 
+Focal point: the Vehicle Information Card is the primary form section, rendered first and receiving visual priority. On page load, the first field (Make) receives focus.
+
 1. **Vehicle Information** (Card) -- Make, Model, Year, VIN, Mileage, Exterior Color, Interior Color, Body Style, Transmission, Fuel Type, Drivetrain, Condition, Status
 2. **Pricing & Costs** (Card) -- List Price, Purchase Price, Purchase Date
 3. **Description & Features** (Card) -- Description (Textarea), Features (Textarea or comma-separated)
@@ -132,13 +134,19 @@ Error state border: inputs with validation errors use `border-destructive` (repl
 
 ### Customer Form
 
+Focal point: the single Card form. On page load, the First Name field receives focus.
+
 Single Card: First Name, Last Name, Email, Phone, Address, City, State, Zip
 
 ### Lead Form
 
+Focal point: the single Card form. On page load, the Customer selector receives focus.
+
 Single Card: Customer selector or name fields, Vehicle selector (optional), Source, Status, Notes
 
 ### Deal Form Sections
+
+Focal point: Deal Info Card with customer and vehicle selectors. On page load, the Customer selector receives focus.
 
 1. **Deal Info** (Card) -- Deal type/status, SearchableSelect for Customer, SearchableSelect for Vehicle
 2. **Pricing** (Card) -- Sale Price, Trade-in Value, Down Payment, Interest Rate, Loan Term. Live-calculated read-only fields: Monthly Payment, Total Cost, Gross Profit
@@ -192,10 +200,10 @@ Single Card: Customer selector or name fields, Vehicle selector (optional), Sour
 | Action | Interaction |
 |--------|-------------|
 | Upload | File input button "Add Images" at top of Images Card. Accepts multiple files. |
-| Reorder | Up/Down arrow icon buttons on each thumbnail. Disabled at boundary positions. |
-| Set primary | Star icon (lucide `Star`) on each thumbnail. Filled star = primary, outline = not primary. Click to set. Only one primary at a time. |
-| Delete | Trash icon button (lucide `Trash2`) on each thumbnail. Opens Dialog: "Delete this image? This cannot be undone." with Cancel + Delete buttons. |
-| Thumbnail grid | CSS grid, 4 columns on desktop (`grid-cols-2 sm:grid-cols-3 md:grid-cols-4`), `gap-3` (12px). Each thumbnail is 1:1 aspect ratio with `object-cover`. |
+| Reorder | Up/Down arrow icon buttons (lucide `ChevronUp` / `ChevronDown`) on each thumbnail. `aria-label="Move image up"` / `aria-label="Move image down"`. Disabled at boundary positions. |
+| Set primary | Star icon button (lucide `Star`) on each thumbnail. `aria-label="Set as primary image"`. Filled star = primary, outline = not primary. Click to set. Only one primary at a time. |
+| Delete | Trash icon button (lucide `Trash2`) on each thumbnail. `aria-label="Delete image"`. Opens Dialog: "Delete this image? This cannot be undone." with "Keep Image" + "Delete" buttons. |
+| Thumbnail grid | CSS grid, 4 columns on desktop (`grid-cols-2 sm:grid-cols-3 md:grid-cols-4`), `gap-2` (8px). Each thumbnail is 1:1 aspect ratio with `object-cover`. |
 
 ### Searchable Select (Deal Form)
 
@@ -232,7 +240,7 @@ Single Card: Customer selector or name fields, Vehicle selector (optional), Sour
 | Delete image confirmation title | "Delete Image" |
 | Delete image confirmation body | "This image will be permanently removed. This cannot be undone." |
 | Delete image confirm button | "Delete" (variant destructive) |
-| Delete image cancel button | "Cancel" (variant outline) |
+| Delete image cancel button | "Keep Image" (variant outline) |
 | Toast: create success | "{Entity} added successfully" |
 | Toast: edit success | "Changes saved" |
 | Toast: delete image success | "Image deleted" |
@@ -268,6 +276,7 @@ No third-party registry blocks are used in this phase. The @supabase registry is
 | Required fields | `aria-required="true"` on required inputs |
 | Focus management | Scroll to first error field on submit. Focus the field after scroll. |
 | Image alt text | Thumbnails use `alt="Vehicle image {position}"` |
+| Icon-only buttons | Reorder buttons: `aria-label="Move image up"` / `aria-label="Move image down"`. Star button: `aria-label="Set as primary image"`. Delete button: `aria-label="Delete image"`. |
 | Dialog | shadcn Dialog handles focus trap and Escape-to-close |
 | Button disabled state | `aria-disabled` and `disabled` attribute during submission |
 | Keyboard navigation | All form controls reachable via Tab. Enter submits form. |
