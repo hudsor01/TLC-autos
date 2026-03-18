@@ -34,8 +34,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Dashboard (DASH)
 
-- [ ] **DASH-01**: Dashboard shows key metrics (total vehicles, active leads, recent deals, revenue)
-- [ ] **DASH-02**: Dashboard has analytics charts via Recharts (sales trends, inventory aging, lead funnel)
+- [x] **DASH-01**: Dashboard shows key metrics (total vehicles, active leads, recent deals, revenue)
+- [x] **DASH-02**: Dashboard has analytics charts via Recharts (sales trends, inventory aging, lead funnel)
 
 ### Notifications (NOTF)
 
@@ -117,8 +117,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-03 | Phase 3 | Pending |
 | DATA-04 | Phase 3 | Pending |
 | DATA-05 | Phase 3 | Complete |
-| DASH-01 | Phase 3 | Pending |
-| DASH-02 | Phase 3 | Pending |
+| DASH-01 | Phase 3 | Complete |
+| DASH-02 | Phase 3 | Complete |
 | NOTF-01 | Phase 1 | Complete |
 | MEDIA-01 | -- | Complete |
 | MEDIA-02 | Phase 2 | Complete |
