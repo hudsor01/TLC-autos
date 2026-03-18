@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/admin/login");
+    router.push("/");
     router.refresh();
   }
 
