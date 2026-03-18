@@ -26,16 +26,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Data Tables (DATA)
 
-- [ ] **DATA-01**: Vehicles list uses @tanstack/react-table with sorting, filtering, pagination
-- [ ] **DATA-02**: Customers list uses @tanstack/react-table with sorting, filtering, pagination
-- [ ] **DATA-03**: Leads list uses @tanstack/react-table with sorting, filtering, pagination
-- [ ] **DATA-04**: Deals list uses @tanstack/react-table with sorting, filtering, pagination
-- [ ] **DATA-05**: Table filters sync to URL via nuqs (shareable/bookmarkable)
+- [x] **DATA-01**: Vehicles list uses @tanstack/react-table with sorting, filtering, pagination
+- [x] **DATA-02**: Customers list uses @tanstack/react-table with sorting, filtering, pagination
+- [x] **DATA-03**: Leads list uses @tanstack/react-table with sorting, filtering, pagination
+- [x] **DATA-04**: Deals list uses @tanstack/react-table with sorting, filtering, pagination
+- [x] **DATA-05**: Table filters sync to URL via nuqs (shareable/bookmarkable)
 
 ### Dashboard (DASH)
 
-- [ ] **DASH-01**: Dashboard shows key metrics (total vehicles, active leads, recent deals, revenue)
-- [ ] **DASH-02**: Dashboard has analytics charts via Recharts (sales trends, inventory aging, lead funnel)
+- [x] **DASH-01**: Dashboard shows key metrics (total vehicles, active leads, recent deals, revenue)
+- [x] **DASH-02**: Dashboard has analytics charts via Recharts (sales trends, inventory aging, lead funnel)
 
 ### Notifications (NOTF)
 
@@ -112,13 +112,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FORM-04 | Phase 2 | Pending |
 | FORM-05 | Phase 2 | Complete |
 | FORM-06 | -- | Complete |
-| DATA-01 | Phase 3 | Pending |
-| DATA-02 | Phase 3 | Pending |
-| DATA-03 | Phase 3 | Pending |
-| DATA-04 | Phase 3 | Pending |
-| DATA-05 | Phase 3 | Pending |
-| DASH-01 | Phase 3 | Pending |
-| DASH-02 | Phase 3 | Pending |
+| DATA-01 | Phase 3 | Complete |
+| DATA-02 | Phase 3 | Complete |
+| DATA-03 | Phase 3 | Complete |
+| DATA-04 | Phase 3 | Complete |
+| DATA-05 | Phase 3 | Complete |
+| DASH-01 | Phase 3 | Complete |
+| DASH-02 | Phase 3 | Complete |
 | NOTF-01 | Phase 1 | Complete |
 | MEDIA-01 | -- | Complete |
 | MEDIA-02 | Phase 2 | Complete |

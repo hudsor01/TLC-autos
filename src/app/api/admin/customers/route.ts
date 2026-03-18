@@ -26,8 +26,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const sortBy = searchParams.get("sort") || "created_at";
+    const sortOrder = searchParams.get("order") || "desc";
+    const ALLOWED_SORT = ["created_at", "first_name", "last_name", "email", "phone"];
+    const validSort = ALLOWED_SORT.includes(sortBy) ? sortBy : "created_at";
+
     const { data: customers, count, error } = await query
-      .order("created_at", { ascending: false })
+      .order(validSort, { ascending: sortOrder === "asc" })
       .range(from, to);
 
     if (error) {

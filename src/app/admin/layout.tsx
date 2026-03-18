@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
@@ -135,7 +136,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </h1>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </main>
       </div>
     </div>
   );

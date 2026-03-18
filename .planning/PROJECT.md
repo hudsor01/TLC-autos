@@ -32,12 +32,12 @@ Customers can browse available vehicles and contact the dealership, while staff 
 - Integrate @tanstack/react-form for all admin forms — Phase 2
 - Integrate Sonner toast notifications for user feedback — Phase 1 (setup), Phase 2 (usage)
 - Vehicle image upload/management UI via Supabase Storage — Phase 2 (ImageManager component)
+- Integrate @tanstack/react-table for admin data tables — Phase 3
+- Integrate Recharts for dashboard analytics — Phase 3
+- Integrate nuqs for URL-synced filters and pagination — Phase 3
 
 ### Active
 
-- [ ] Integrate @tanstack/react-table for admin data tables
-- [ ] Integrate Recharts for dashboard analytics
-- [ ] Integrate nuqs for URL-synced filters and pagination
 - [ ] Create seed script for Supabase
 
 ### Out of Scope
@@ -82,6 +82,10 @@ Customers can browse available vehicles and contact the dealership, while staff 
 | TanStack Form + Standard Schema | Form state management with Zod integration via Standard Schema protocol | Good — Phase 2 |
 | FormField render-prop pattern | Consistent label + input + error display across all forms | Good — Phase 2 |
 | SearchableSelect (Popover + Command) | Reusable filtered dropdown for entity selectors | Good — Phase 2 |
+| DataTable + nuqs URL state | Generic tanstack-table with manual sorting/pagination, nuqs URL-synced filters | Good — Phase 3 |
+| ALLOWED_SORT allowlist | Validate sort columns against explicit array to prevent sort injection | Good — Phase 3 |
+| Column factory pattern | getXxxColumns({ onDelete }) returns typed ColumnDef[] per entity | Good — Phase 3 |
+| CSS variable chart theming | Recharts colors via CSS variables for dark mode and design system consistency | Good — Phase 3 |
 
 ---
-*Last updated: 2026-03-18 after Phase 2*
+*Last updated: 2026-03-18 after Phase 3*

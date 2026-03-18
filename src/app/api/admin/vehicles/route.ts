@@ -31,8 +31,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const sortBy = searchParams.get("sort") || "date_added";
+    const sortOrder = searchParams.get("order") || "desc";
+    const ALLOWED_SORT = ["date_added", "year", "make", "model", "selling_price", "status", "stock_number", "mileage"];
+    const validSort = ALLOWED_SORT.includes(sortBy) ? sortBy : "date_added";
+
     const { data: vehicles, count, error } = await query
-      .order("date_added", { ascending: false })
+      .order(validSort, { ascending: sortOrder === "asc" })
       .range(from, to);
 
     if (error) {
