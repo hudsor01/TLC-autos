@@ -29,11 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. All Supabase queries use generated TypeScript types -- no `any` casts on database responses
   4. Staff can log out from the admin sidebar and are redirected to the login page
   5. A toast notification appears on screen when any CRUD operation succeeds or fails
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md -- Generate TypeScript types, wire Database generic, harden RLS policies
+- [ ] 01-02-PLAN.md -- Create seed script with realistic dealership data and image uploads
+- [ ] 01-03-PLAN.md -- Add Sonner toast system and fix admin logout redirect
 
 ### Phase 2: Admin Forms
 **Goal**: Staff can create and edit all entities (vehicles, customers, leads, deals) through validated forms with field-level error messages, and manage vehicle images
@@ -87,7 +88,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/3 | Not started | - |
 | 2. Admin Forms | 0/TBD | Not started | - |
 | 3. Admin Data & Dashboard | 0/TBD | Not started | - |
 | 4. Public Site | 0/TBD | Not started | - |
