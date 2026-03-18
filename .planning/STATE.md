@@ -18,19 +18,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-17)
+See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Customers can browse available vehicles and contact the dealership, while staff can manage the entire sales pipeline from a single admin dashboard.
-**Current focus:** Phase 2: Admin Forms
+**Current focus:** Phase 3: Admin Data & Dashboard
 
 ## Current Position
 
-Phase: 2 of 4 (Admin Forms)
-Plan: 2 of 4 in current phase
-Status: Executing
-Last activity: 2026-03-18 -- Completed 02-02 (Vehicle Form + Image Management)
+Phase: 3 of 4 (Admin Data & Dashboard)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-03-18 -- Phase 2 complete, transitioning to Phase 3
 
-Progress: [█████░░░░░] 50%
+Progress: [████████████████████] 7/7 plans (100%)
 
 ## Performance Metrics
 
@@ -63,13 +63,12 @@ Progress: [█████░░░░░] 50%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- Roadmap: Coarse granularity -- 4 phases covering 22 remaining requirements (9 already complete)
-- Roadmap: Foundation phase includes NOTF-01 (Sonner toasts) because toast feedback is needed by all subsequent phases
-- [Phase 01-foundation]: Applied initial schema migration to remote Supabase before type generation (tables were not present)
-- [Phase 01-foundation]: RLS uses private schema helper functions (is_admin/is_staff) with app_metadata role checks, not auth.role()
+- [Phase 02-admin-forms]: Zod 4 syntax: z.email() not z.string().email(), error: not message: for custom errors
+- [Phase 02-admin-forms]: FormField render-prop: children receives { isInvalid, errorId } for input styling
+- [Phase 02-admin-forms]: validateRequest returns discriminated union { success, data } | { success, response }
+- [Phase 02-admin-forms]: SearchableSelect filters by option.label via cmdk built-in search
 - [Phase 02-admin-forms]: VehicleForm handles submit internally (no onSubmit prop) -- form owns routing and toast feedback
 - [Phase 02-admin-forms]: ImageManager uses optimistic updates with revert on API failure
-- [Phase 02-admin-forms]: setFieldMeta with errorMap.onSubmit for server-side validation error propagation
 
 ### Pending Todos
 
@@ -78,10 +77,9 @@ None yet.
 ### Blockers/Concerns
 
 - Supabase service role key not yet configured in .env.local (noted in PROJECT.md)
-- Pre-existing TypeScript errors in deal-form.tsx (will need fixing in plan 02-04)
 
 ## Session Continuity
 
-Last session: 2026-03-18T05:13:30.000Z
-Stopped at: Completed 02-02 (Vehicle Form + Image Management)
-Resume file: .planning/phases/02-admin-forms/02-02-SUMMARY.md
+Last session: 2026-03-18
+Stopped at: Phase 2 complete, ready to plan Phase 3
+Resume file: None

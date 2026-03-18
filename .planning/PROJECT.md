@@ -26,20 +26,19 @@ Customers can browse available vehicles and contact the dealership, while staff 
 - Design system in globals.css with light/dark mode — existing
 - Pre-commit hooks via Lefthook — existing
 
+### Validated
+
+- Integrate Zod validation across API routes and forms — Phase 2
+- Integrate @tanstack/react-form for all admin forms — Phase 2
+- Integrate Sonner toast notifications for user feedback — Phase 1 (setup), Phase 2 (usage)
+- Vehicle image upload/management UI via Supabase Storage — Phase 2 (ImageManager component)
+
 ### Active
 
-- [ ] Complete Supabase migration — rewrite 17 broken API routes from Prisma to Supabase
-- [ ] Run database migration SQL in Supabase
-- [ ] Implement Supabase Auth login/signup/logout flows
-- [ ] Integrate Zod validation across API routes and forms
-- [ ] Integrate @tanstack/react-form for all admin forms
 - [ ] Integrate @tanstack/react-table for admin data tables
-- [ ] Integrate Sonner toast notifications for user feedback
 - [ ] Integrate Recharts for dashboard analytics
 - [ ] Integrate nuqs for URL-synced filters and pagination
-- [ ] Implement vehicle image upload/management via Supabase Storage
 - [ ] Create seed script for Supabase
-- [ ] Update lefthook.yml to remove Prisma references
 
 ### Out of Scope
 
@@ -79,6 +78,10 @@ Customers can browse available vehicles and contact the dealership, while staff 
 | Bun over npm | Faster installs, native TS execution for scripts | Good |
 | Lefthook over CI/CD | Pre-commit catches issues before push — GitHub is just a vessel to Vercel | Good |
 | Coarse phase granularity | 3-5 broad phases for faster delivery | -- Pending |
+| Zod 4 schema-first validation | Shared schemas between client forms and server API routes | Good — Phase 2 |
+| TanStack Form + Standard Schema | Form state management with Zod integration via Standard Schema protocol | Good — Phase 2 |
+| FormField render-prop pattern | Consistent label + input + error display across all forms | Good — Phase 2 |
+| SearchableSelect (Popover + Command) | Reusable filtered dropdown for entity selectors | Good — Phase 2 |
 
 ---
-*Last updated: 2026-03-17 after initialization*
+*Last updated: 2026-03-18 after Phase 2*
