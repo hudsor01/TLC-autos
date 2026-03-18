@@ -46,11 +46,13 @@ Plans:
   3. Submitting any form to an admin API route with malformed JSON returns a structured Zod validation error (not a 500)
   4. Staff can reorder vehicle images via the admin form and select which image appears as the primary listing photo
   5. Staff can delete individual vehicle images from the admin form
-**Plans**: TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md -- TDD shared infrastructure: Zod schemas, API validation helper, deal calculations, FormField + SearchableSelect components, vitest setup
+- [ ] 02-02-PLAN.md -- Vehicle form rewrite with Card sections, ImageManager component, vehicle API Zod validation + image PATCH endpoint
+- [ ] 02-03-PLAN.md -- Customer and lead forms with TanStack Form + Zod, customer/lead API Zod validation
+- [ ] 02-04-PLAN.md -- Deal form with searchable selectors, live pricing calculations, deal API Zod validation
 
 ### Phase 3: Admin Data & Dashboard
 **Goal**: Staff can browse, sort, filter, and paginate all entity lists in the admin, with URL-synced filters and a dashboard showing business metrics and charts
@@ -89,6 +91,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
-| 2. Admin Forms | 0/TBD | Not started | - |
+| 2. Admin Forms | 0/4 | Planned | - |
 | 3. Admin Data & Dashboard | 0/TBD | Not started | - |
 | 4. Public Site | 0/TBD | Not started | - |
