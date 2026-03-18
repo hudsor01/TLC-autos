@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-18T02:52:16.690Z"
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-03-18T02:58:10.313Z"
 last_activity: 2026-03-18 -- Completed 01-03 (Toast notifications and logout fix)
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 33
 ---
 
@@ -51,6 +51,7 @@ Progress: [███░░░░░░░] 33%
 
 *Updated after each plan completion*
 | Phase 01-foundation P03 | 2min | 2 tasks | 2 files |
+| Phase 01-foundation P01 | 7min | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,8 @@ Recent decisions affecting current work:
 
 - Roadmap: Coarse granularity -- 4 phases covering 22 remaining requirements (9 already complete)
 - Roadmap: Foundation phase includes NOTF-01 (Sonner toasts) because toast feedback is needed by all subsequent phases
+- [Phase 01-foundation]: Applied initial schema migration to remote Supabase before type generation (tables were not present)
+- [Phase 01-foundation]: RLS uses private schema helper functions (is_admin/is_staff) with app_metadata role checks, not auth.role()
 
 ### Pending Todos
 
@@ -72,6 +75,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T02:52:16.687Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-03-18T02:58:10.310Z
+Stopped at: Completed 01-01-PLAN.md
 Resume file: None
