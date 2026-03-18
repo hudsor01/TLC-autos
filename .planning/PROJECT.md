@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A used car dealership website with a built-in admin Dealer Management System (DMS). The public site lets customers browse inventory, view vehicle details, and submit contact/lead forms. The admin DMS lets dealership staff manage vehicles, customers, leads, deals, and costs behind authenticated routes.
+A used car dealership website with a built-in admin Dealer Management System (DMS). The public site lets customers browse inventory with filters, view vehicle details with image galleries, and submit contact/lead forms. The admin DMS lets dealership staff manage vehicles, customers, leads, deals, and costs behind authenticated routes with validated forms, sortable data tables, and a dashboard with business analytics.
 
 ## Core Value
 
@@ -12,33 +12,31 @@ Customers can browse available vehicles and contact the dealership, while staff 
 
 ### Validated
 
-- Public homepage with dealership branding and navigation — existing
-- Public inventory page with vehicle listing and filtering — existing
-- Public vehicle detail pages with images and specs — existing
-- Public contact form that submits leads — existing (structure only, broken import)
-- Public about and financing info pages — existing
-- Admin route protection via Supabase middleware — existing
-- Admin dashboard layout with sidebar navigation — existing
-- Admin pages for vehicles, customers, leads, deals, users, settings — existing (UI shells)
-- Supabase client utilities (server, browser, middleware) — existing
-- Database schema with RLS policies — existing (migration SQL written, not yet applied)
-- UI component library (shadcn/ui pattern) — existing
-- Design system in globals.css with light/dark mode — existing
-- Pre-commit hooks via Lefthook — existing
-
-### Validated
-
-- Integrate Zod validation across API routes and forms — Phase 2
-- Integrate @tanstack/react-form for all admin forms — Phase 2
-- Integrate Sonner toast notifications for user feedback — Phase 1 (setup), Phase 2 (usage)
-- Vehicle image upload/management UI via Supabase Storage — Phase 2 (ImageManager component)
-- Integrate @tanstack/react-table for admin data tables — Phase 3
-- Integrate Recharts for dashboard analytics — Phase 3
-- Integrate nuqs for URL-synced filters and pagination — Phase 3
+- ✓ Public homepage with dealership branding and navigation — existing
+- ✓ Public inventory page with vehicle listing and filtering — v1.0
+- ✓ Public vehicle detail pages with images and specs — v1.0
+- ✓ Public contact form that submits leads — v1.0
+- ✓ Public about and financing info pages — existing
+- ✓ Admin route protection via Supabase middleware — existing
+- ✓ Admin dashboard layout with sidebar navigation — existing
+- ✓ Admin pages for vehicles, customers, leads, deals, users, settings — v1.0
+- ✓ Supabase client utilities (server, browser, middleware) — existing
+- ✓ Database schema with RLS policies — v1.0
+- ✓ UI component library (shadcn/ui pattern) — existing
+- ✓ Design system in globals.css with light/dark mode — existing
+- ✓ Pre-commit hooks via Lefthook — existing
+- ✓ Zod validation across API routes and forms — v1.0
+- ✓ @tanstack/react-form for all admin forms — v1.0
+- ✓ Sonner toast notifications for user feedback — v1.0
+- ✓ Vehicle image upload/management UI via Supabase Storage — v1.0
+- ✓ @tanstack/react-table for admin data tables — v1.0
+- ✓ Recharts for dashboard analytics — v1.0
+- ✓ nuqs for URL-synced filters and pagination — v1.0
+- ✓ Seed script for Supabase — v1.0
 
 ### Active
 
-- [ ] Create seed script for Supabase
+(None — next milestone not yet planned)
 
 ### Out of Scope
 
@@ -48,16 +46,24 @@ Customers can browse available vehicles and contact the dealership, while staff 
 - Multi-dealership support — single dealership operation
 - OAuth/social login — email/password via Supabase Auth is sufficient
 - Frazer DMS integration — removed legacy import system
+- Real-time updates (WebSockets) — single-user DMS, no concurrent editing
+- Client-side cache (React Query) — 1-2 admin users, small dataset
+- GraphQL — Supabase JS client provides equivalent query capability
 
 ## Context
 
-**Migration state:** The project was originally built with Prisma/SQLite/NextAuth. A decision was made to migrate to Supabase for auth, database, and storage — replacing three separate tools with one SDK. The Supabase client utilities and database schema SQL are in place, but 17 API route files and the login page still import from removed packages (`@/lib/db`, `@/lib/auth`, `bcryptjs`, `next-auth/react`). The build is broken until these are rewritten.
+**Current state:** v1.0 MVP shipped 2026-03-18. 93 commits, 230 files, ~39k LOC TypeScript.
 
-**Tech stack:** Next.js 16.1.6, React 19.2.4, Supabase (auth + PostgreSQL + storage), Tailwind CSS v4, TypeScript strict mode. Several packages are installed but not yet integrated: @tanstack/react-form, @tanstack/react-table, Zod, Sonner, Recharts, nuqs.
+**Tech stack:** Next.js 16.1.6, React 19.2.4, Supabase (auth + PostgreSQL + storage), Tailwind CSS v4, TypeScript strict mode. Integrated packages: @tanstack/react-form, @tanstack/react-table, Zod 4, Sonner, Recharts, nuqs.
 
-**Deployment:** GitHub repo → Vercel. Lefthook pre-commit hooks handle lint, typecheck, and build checks locally. No CI/CD pipeline — GitHub is a vessel to Vercel/prod.
+**Deployment:** GitHub repo → Vercel. Lefthook pre-commit hooks handle lint, typecheck, and build checks locally.
 
-**Supabase project:** `ychvjgynekceffeqqymf.supabase.co`. Service role key not yet configured in `.env.local`.
+**Supabase project:** `ychvjgynekceffeqqymf.supabase.co`.
+
+**Known tech debt:**
+- Dead code: `fetchInventory` in `src/lib/supabase/queries.ts` (replaced by public API route)
+- Contact form has no duplicate-submission guard (race condition on rapid clicks)
+- `SUPABASE_SERVICE_ROLE_KEY` env var naming is non-standard (should be `NEXT_PUBLIC_` prefixed or server-only)
 
 ## Constraints
 
@@ -72,20 +78,24 @@ Customers can browse available vehicles and contact the dealership, while staff 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Supabase over Neon | One SDK for auth + DB + storage vs Neon needing separate auth/storage integrations | -- Pending |
-| Remove Prisma entirely | Supabase JS client replaces ORM — direct PostgreSQL queries via Supabase SDK | -- Pending |
-| Remove NextAuth | Supabase Auth handles all auth flows — no separate auth library needed | -- Pending |
-| Bun over npm | Faster installs, native TS execution for scripts | Good |
-| Lefthook over CI/CD | Pre-commit catches issues before push — GitHub is just a vessel to Vercel | Good |
-| Coarse phase granularity | 3-5 broad phases for faster delivery | -- Pending |
-| Zod 4 schema-first validation | Shared schemas between client forms and server API routes | Good — Phase 2 |
-| TanStack Form + Standard Schema | Form state management with Zod integration via Standard Schema protocol | Good — Phase 2 |
-| FormField render-prop pattern | Consistent label + input + error display across all forms | Good — Phase 2 |
-| SearchableSelect (Popover + Command) | Reusable filtered dropdown for entity selectors | Good — Phase 2 |
-| DataTable + nuqs URL state | Generic tanstack-table with manual sorting/pagination, nuqs URL-synced filters | Good — Phase 3 |
-| ALLOWED_SORT allowlist | Validate sort columns against explicit array to prevent sort injection | Good — Phase 3 |
-| Column factory pattern | getXxxColumns({ onDelete }) returns typed ColumnDef[] per entity | Good — Phase 3 |
-| CSS variable chart theming | Recharts colors via CSS variables for dark mode and design system consistency | Good — Phase 3 |
+| Supabase over Neon | One SDK for auth + DB + storage vs Neon needing separate auth/storage integrations | ✓ Good |
+| Remove Prisma entirely | Supabase JS client replaces ORM — direct PostgreSQL queries via Supabase SDK | ✓ Good |
+| Remove NextAuth | Supabase Auth handles all auth flows — no separate auth library needed | ✓ Good |
+| Bun over npm | Faster installs, native TS execution for scripts | ✓ Good |
+| Lefthook over CI/CD | Pre-commit catches issues before push — GitHub is just a vessel to Vercel | ✓ Good |
+| Coarse phase granularity | 3-5 broad phases for faster delivery | ✓ Good — 4 phases, 12 plans |
+| Zod 4 schema-first validation | Shared schemas between client forms and server API routes | ✓ Good |
+| TanStack Form + Standard Schema | Form state management with Zod integration via Standard Schema protocol | ✓ Good |
+| FormField render-prop pattern | Consistent label + input + error display across all forms | ✓ Good |
+| SearchableSelect (Popover + Command) | Reusable filtered dropdown for entity selectors | ✓ Good |
+| DataTable + nuqs URL state | Generic tanstack-table with manual sorting/pagination, nuqs URL-synced filters | ✓ Good |
+| ALLOWED_SORT allowlist | Validate sort columns against explicit array to prevent sort injection | ✓ Good |
+| Column factory pattern | getXxxColumns({ onDelete }) returns typed ColumnDef[] per entity | ✓ Good |
+| CSS variable chart theming | Recharts colors via CSS variables for dark mode and design system consistency | ✓ Good |
+| NuqsAdapter in root Providers | Moved from admin layout to root so public and admin routes both have nuqs support | ✓ Good |
+| Public API with filterOptions | API returns available filter values alongside vehicles for dynamic dropdowns | ✓ Good |
+| Inline Zod validation (no form lib) | Contact form uses validateField on blur — simpler than TanStack Form for public forms | ✓ Good |
+| toast.promise for async feedback | Wraps fetch for loading/success/error states without manual state management | ✓ Good |
 
 ---
-*Last updated: 2026-03-18 after Phase 3*
+*Last updated: 2026-03-18 after v1.0 milestone*
