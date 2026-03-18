@@ -63,11 +63,12 @@ Plans:
   2. Applying a filter on any admin table updates the URL -- copying that URL into a new tab restores the exact filter state
   3. Dashboard displays key metrics: total vehicles in inventory, active leads count, recent deals count, and total revenue
   4. Dashboard shows at least two Recharts visualizations (sales trend over time, and one of: inventory aging, lead funnel, or deals by status)
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md -- Shared DataTable infrastructure, useTableFilters hook, NuqsAdapter, API sort params
+- [ ] 03-02-PLAN.md -- Rewrite vehicles, customers, leads, deals list pages with DataTable + URL filters
+- [ ] 03-03-PLAN.md -- Dashboard metrics with revenue, Recharts sales trend and inventory status charts
 
 ### Phase 4: Public Site
 **Goal**: Customers can browse the full vehicle inventory with filters, view detailed vehicle pages with all images, and submit contact inquiries -- all with shareable URLs
@@ -92,5 +93,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
 | 2. Admin Forms | 4/4 | Complete   | 2026-03-18 |
-| 3. Admin Data & Dashboard | 0/TBD | Not started | - |
+| 3. Admin Data & Dashboard | 0/3 | In Progress | - |
 | 4. Public Site | 0/TBD | Not started | - |
