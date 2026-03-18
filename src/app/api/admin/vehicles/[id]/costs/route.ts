@@ -40,7 +40,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
     const { data: cost, error } = await supabase
       .from("vehicle_costs")
-      .insert(dbData)
+      .insert(dbData as never)
       .select()
       .single();
 

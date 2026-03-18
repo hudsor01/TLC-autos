@@ -40,7 +40,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
     const { data: followUp, error } = await supabase
       .from("follow_ups")
-      .insert(dbData)
+      .insert(dbData as never)
       .select()
       .single();
 

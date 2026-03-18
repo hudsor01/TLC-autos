@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
 
     const { data: vehicle, error } = await supabase
       .from("vehicles")
-      .insert(dbData)
+      .insert(dbData as never)
       .select()
       .single();
 

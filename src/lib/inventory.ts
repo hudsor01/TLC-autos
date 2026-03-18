@@ -58,8 +58,8 @@ export async function fetchInventory(): Promise<Vehicle[]> {
     price: Number(v.selling_price) || 0,
     description: v.description ?? "",
     images: (v.vehicle_images ?? [])
-      .sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)
-      .map((img: { url: string }) => img.url),
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((img) => img.url),
     status: v.status as "available" | "pending" | "sold",
     transmission: v.transmission ?? "",
     engine: v.engine ?? "",
@@ -101,8 +101,8 @@ export async function fetchVehicleById(id: string): Promise<Vehicle | null> {
     price: Number(v.selling_price) || 0,
     description: v.description ?? "",
     images: (v.vehicle_images ?? [])
-      .sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)
-      .map((img: { url: string }) => img.url),
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((img) => img.url),
     status: v.status as "available" | "pending" | "sold",
     transmission: v.transmission ?? "",
     engine: v.engine ?? "",
