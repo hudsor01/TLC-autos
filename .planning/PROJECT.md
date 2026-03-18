@@ -36,7 +36,14 @@ Customers can browse available vehicles and contact the dealership, while staff 
 
 ### Active
 
-(None — next milestone not yet planned)
+- [ ] Light-only premium design system — remove dark mode, evolve navy/crimson palette for light backgrounds
+- [ ] Homepage redesign — split layout hero, stats bar, feature cards, testimonials, CTA
+- [ ] Inventory page redesign — card grid with lightbox, refined filters
+- [ ] Vehicle detail page redesign — gallery-first layout with large hero images
+- [ ] Contact page redesign — premium form layout with validation
+- [ ] About page redesign — brand story, team, dealership values
+- [ ] Financing page redesign — clear options layout, CTA-driven
+- [ ] Subtle motion — smooth hover states, gentle transitions, scroll reveals
 
 ### Out of Scope
 
@@ -97,5 +104,18 @@ Customers can browse available vehicles and contact the dealership, while staff 
 | Inline Zod validation (no form lib) | Contact form uses validateField on blur — simpler than TanStack Form for public forms | ✓ Good |
 | toast.promise for async feedback | Wraps fetch for loading/success/error states without manual state management | ✓ Good |
 
+## Current Milestone: v1.1 UI Polish
+
+**Goal:** Redesign all public-facing pages with a light-only, premium aesthetic — evolved brand palette, refined typography, gallery-first vehicle detail, and subtle motion throughout.
+
+**Target features:**
+- Light-only design system (remove dark mode entirely)
+- Evolved navy/crimson palette optimized for light backgrounds
+- All 6 public pages fully redesigned (homepage, inventory, vehicle detail, contact, about, financing)
+- Split layout homepage hero
+- Card grid inventory with lightbox
+- Gallery-first vehicle detail
+- Subtle, refined animations and micro-interactions
+
 ---
-*Last updated: 2026-03-18 after v1.0 milestone*
+*Last updated: 2026-03-18 after v1.1 milestone start*
