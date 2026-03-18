@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-18T14:27:22.152Z"
-last_activity: 2026-03-18 -- Plan 03-03 complete (Dashboard charts & metrics)
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-18T14:46:44.828Z"
+last_activity: 2026-03-18 -- Plan 04-01 complete (Public inventory API & URL-synced filters)
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
-  percent: 100
+  total_plans: 12
+  completed_plans: 11
+  percent: 92
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 3 of 4 (Admin Data & Dashboard)
-Plan: 3 of 3 complete
+Phase: 4 of 4 (Public Site)
+Plan: 1 of 2 complete
 Status: Executing
-Last activity: 2026-03-18 -- Plan 03-03 complete (Dashboard charts & metrics)
+Last activity: 2026-03-18 -- Plan 04-01 complete (Public inventory API & URL-synced filters)
 
-Progress: [████████████████████] 10/10 plans (100%)
+Progress: [██████████████████░░] 11/12 plans (92%)
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [████████████████████] 10/10 p
 | Phase 01-foundation P01 | 7min | 2 tasks | 14 files |
 | Phase 03-admin-data-dashboard P03 | 2min | 2 tasks | 5 files |
 | Phase 03-admin-data-dashboard P02 | 4min | 2 tasks | 9 files |
+| Phase 04-public-site P01 | 3min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting current work:
 - [Phase 03-admin-data-dashboard]: Sales trend aggregated server-side into monthly buckets, inventoryByStatus reuses existing count queries
 - [Phase 03-admin-data-dashboard]: Column definitions use getXxxColumns factory pattern accepting onDelete callback
 - [Phase 03-admin-data-dashboard]: Pages wrapped in Suspense boundary for nuqs useSearchParams SSG compatibility
+- [Phase 04-public-site]: NuqsAdapter moved to root Providers component so public and admin routes both have nuqs support
+- [Phase 04-public-site]: Public API returns filterOptions alongside vehicles for dynamic filter dropdowns
+- [Phase 04-public-site]: Public API routes use no auth, always filter .eq(status, available)
 
 ### Pending Todos
 
@@ -90,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T14:27:22.150Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-public-site/04-CONTEXT.md
+Last session: 2026-03-18T14:46:44.826Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

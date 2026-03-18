@@ -49,10 +49,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Public Site (PUB)
 
-- [ ] **PUB-01**: Public inventory page filters vehicles by make/model/year/price
+- [x] **PUB-01**: Public inventory page filters vehicles by make/model/year/price
 - [ ] **PUB-02**: Public vehicle detail page shows all images and specs
 - [ ] **PUB-03**: Contact form submits leads to database with validation
-- [ ] **PUB-04**: Inventory URL filters shareable via nuqs
+- [x] **PUB-04**: Inventory URL filters shareable via nuqs
 
 ### Infrastructure (INFRA)
 
@@ -123,10 +123,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MEDIA-01 | -- | Complete |
 | MEDIA-02 | Phase 2 | Complete |
 | MEDIA-03 | Phase 2 | Complete |
-| PUB-01 | Phase 4 | Pending |
+| PUB-01 | Phase 4 | Complete |
 | PUB-02 | Phase 4 | Pending |
 | PUB-03 | Phase 4 | Pending |
-| PUB-04 | Phase 4 | Pending |
+| PUB-04 | Phase 4 | Complete |
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
