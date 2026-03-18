@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Car, Users, UserPlus, Plus, ArrowRight } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { StatsCards } from "@/components/dashboard/stats-cards";
+import { SalesChart } from "@/components/dashboard/sales-chart";
+import { InventoryChart } from "@/components/dashboard/inventory-chart";
 
 interface DashboardData {
   stats: {
@@ -17,6 +21,7 @@ interface DashboardData {
     totalCustomers: number;
     activeLeads: number;
     totalDeals: number;
+    totalRevenue: number;
   };
   recentVehicles: Array<{
     id: string;
@@ -37,6 +42,10 @@ interface DashboardData {
     vehicleInterest: string;
     createdAt: string;
   }>;
+  charts: {
+    salesTrend: Array<{ month: string; deals: number; revenue: number }>;
+    inventoryByStatus: Array<{ status: string; count: number }>;
+  };
 }
 
 export default function AdminDashboard() {
@@ -49,7 +58,27 @@ export default function AdminDashboard() {
   }, []);
 
   if (!data) {
-    return <div className="flex items-center justify-center py-20 text-muted-foreground">Loading dashboard...</div>;
+    return (
+      <div className="space-y-6">
+        {/* Quick Actions skeleton */}
+        <div className="flex flex-wrap gap-2">
+          <Skeleton className="h-9 w-28" />
+          <Skeleton className="h-9 w-24" />
+          <Skeleton className="h-9 w-32" />
+        </div>
+        {/* Stats cards skeleton */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-lg" />
+          ))}
+        </div>
+        {/* Charts skeleton */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Skeleton className="h-[380px] rounded-lg" />
+          <Skeleton className="h-[380px] rounded-lg" />
+        </div>
+      </div>
+    );
   }
 
   const { stats } = data;
@@ -76,13 +105,20 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Car} label="Total Inventory" value={stats.totalVehicles} detail={`${stats.availableVehicles} available`} />
-        <StatCard icon={Car} label="Pending Sales" value={stats.pendingVehicles} detail={`${stats.soldVehicles} sold total`} />
-        <StatCard icon={Users} label="Customers" value={stats.totalCustomers} />
-        <StatCard icon={UserPlus} label="Active Leads" value={stats.activeLeads} />
+      <StatsCards
+        totalVehicles={stats.totalVehicles}
+        activeLeads={stats.activeLeads}
+        totalDeals={stats.totalDeals}
+        totalRevenue={stats.totalRevenue}
+      />
+
+      {/* Charts */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <SalesChart data={data.charts.salesTrend} />
+        <InventoryChart data={data.charts.inventoryByStatus} />
       </div>
 
+      {/* Recent Tables */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Vehicles */}
         <Card>
@@ -152,7 +188,7 @@ export default function AdminDashboard() {
                       <div className="text-xs text-muted-foreground">{l.source}</div>
                     </TableCell>
                     <TableCell className="max-w-[150px] truncate text-sm text-muted-foreground">
-                      {l.vehicleInterest || "—"}
+                      {l.vehicleInterest || "\u2014"}
                     </TableCell>
                     <TableCell>
                       <LeadStatusBadge status={l.status} />
@@ -165,30 +201,6 @@ export default function AdminDashboard() {
         </Card>
       </div>
     </div>
-  );
-}
-
-function StatCard({ icon: Icon, label, value, detail }: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: number;
-  detail?: string;
-}) {
-  return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
-            <Icon className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-2xl font-bold">{value}</p>
-            <p className="text-xs text-muted-foreground">{label}</p>
-            {detail && <p className="text-xs text-muted-foreground">{detail}</p>}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   );
 }
 
