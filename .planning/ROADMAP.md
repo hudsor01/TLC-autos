@@ -12,7 +12,7 @@ TLC Autos is a brownfield project with a working Next.js shell, Supabase migrati
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Infrastructure, types, seed data, RLS, logout, and toast system
+- [x] **Phase 1: Foundation** - Infrastructure, types, seed data, RLS, logout, and toast system (completed 2026-03-18)
 - [ ] **Phase 2: Admin Forms** - Validated CRUD forms for all entities with image management
 - [ ] **Phase 3: Admin Data & Dashboard** - Data tables, URL-synced filters, and analytics charts
 - [ ] **Phase 4: Public Site** - Customer-facing inventory browsing, vehicle details, and contact form
@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. All Supabase queries use generated TypeScript types -- no `any` casts on database responses
   4. Staff can log out from the admin sidebar and are redirected to the login page
   5. A toast notification appears on screen when any CRUD operation succeeds or fails
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] 01-01-PLAN.md -- Generate TypeScript types, wire Database generic, harden RLS policies
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/3 | Not started | - |
+| 1. Foundation | 3/3 | Complete   | 2026-03-18 |
 | 2. Admin Forms | 0/TBD | Not started | - |
 | 3. Admin Data & Dashboard | 0/TBD | Not started | - |
 | 4. Public Site | 0/TBD | Not started | - |

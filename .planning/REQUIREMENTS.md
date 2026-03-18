@@ -56,7 +56,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Infrastructure (INFRA)
 
-- [ ] **INFRA-01**: Supabase database has seed data for development
+- [x] **INFRA-01**: Supabase database has seed data for development
 - [x] **INFRA-02**: RLS policies enforce row-level security
 - [x] **INFRA-03**: Generated TypeScript types from Supabase schema for type-safe queries
 - [x] **INFRA-04**: PostgREST filter injection prevented via sanitizeSearch utility
@@ -127,7 +127,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUB-02 | Phase 4 | Pending |
 | PUB-03 | Phase 4 | Pending |
 | PUB-04 | Phase 4 | Pending |
-| INFRA-01 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | -- | Complete |
