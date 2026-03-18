@@ -68,6 +68,7 @@ Each task was committed atomically:
 
 1. **Task 1: Enhance dashboard API with revenue and chart data** - `37378d0` (feat)
 2. **Task 2: Create chart components and rewrite dashboard page** - `2b90463` (feat)
+3. **Deviation fix: Wrap list pages in Suspense** - `d715629` (fix)
 
 ## Files Created/Modified
 - `src/app/api/admin/dashboard/route.ts` - Enhanced with totalRevenue, salesTrend, inventoryByStatus
@@ -93,10 +94,17 @@ Each task was committed atomically:
 - **Files modified:** src/app/api/admin/dashboard/route.ts
 - **Committed in:** 37378d0
 
+**2. [Rule 3 - Blocking] Wrap list pages in Suspense for useSearchParams**
+- **Found during:** Final commit (build hook)
+- **Issue:** Next.js build failed -- useSearchParams (via nuqs) requires Suspense boundary for static generation
+- **Fix:** Wrapped 4 list pages (vehicles, customers, leads, deals) in Suspense with loading fallback
+- **Files modified:** src/app/admin/vehicles/page.tsx, src/app/admin/customers/page.tsx, src/app/admin/leads/page.tsx, src/app/admin/deals/page.tsx
+- **Committed in:** d715629
+
 ---
 
-**Total deviations:** 1 auto-fixed (1 bug)
-**Impact on plan:** Minor null safety fix. No scope creep.
+**Total deviations:** 2 auto-fixed (1 bug, 1 blocking)
+**Impact on plan:** Both fixes necessary for correctness. Suspense wrapping is a pre-existing issue from plan 03-01. No scope creep.
 
 ## Issues Encountered
 None
