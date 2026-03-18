@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-status: executing
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-18T14:27:22.152Z"
-last_activity: 2026-03-18 -- Plan 03-03 complete (Dashboard charts & metrics)
+milestone_name: MVP
+status: completed
+stopped_at: Milestone v1.0 archived
+last_updated: "2026-03-18T17:00:00.000Z"
+last_activity: 2026-03-18 -- Milestone v1.0 MVP complete and archived
 progress:
   total_phases: 4
-  completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
+  completed_phases: 4
+  total_plans: 12
+  completed_plans: 12
   percent: 100
 ---
 
@@ -21,75 +21,40 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Customers can browse available vehicles and contact the dealership, while staff can manage the entire sales pipeline from a single admin dashboard.
-**Current focus:** Phase 4: Public Site
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 3 of 4 (Admin Data & Dashboard)
-Plan: 3 of 3 complete
-Status: Executing
-Last activity: 2026-03-18 -- Plan 03-03 complete (Dashboard charts & metrics)
+Milestone: v1.0 MVP — SHIPPED
+Next: `/gsd:new-milestone` to start v1.1
 
-Progress: [████████████████████] 10/10 plans (100%)
+Progress: [████████████████████] 12/12 plans (100%)
 
 ## Performance Metrics
 
-**Velocity:**
-- Total plans completed: 0
-- Average duration: --
-- Total execution time: 0 hours
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| - | - | - | - |
-
-**Recent Trend:**
-- Last 5 plans: --
-- Trend: --
-
-*Updated after each plan completion*
-| Phase 03-admin-data-dashboard P01 | 2min | 2 tasks | 9 files |
-| Phase 02-admin-forms P02 | 6min | 2 tasks | 7 files |
-| Phase 02-admin-forms P01 | 5min | 2 tasks | 13 files |
-| Phase 01-foundation P03 | 2min | 2 tasks | 2 files |
-| Phase 01-foundation P02 | 5min | 1 tasks | 2 files |
-| Phase 01-foundation P01 | 7min | 2 tasks | 14 files |
-| Phase 03-admin-data-dashboard P03 | 2min | 2 tasks | 5 files |
-| Phase 03-admin-data-dashboard P02 | 4min | 2 tasks | 9 files |
+| Phase | Plans | Duration | Files |
+|-------|-------|----------|-------|
+| 01 Foundation | 3 | 14min | 18 files |
+| 02 Admin Forms | 4 | ~16min | ~30 files |
+| 03 Admin Data & Dashboard | 3 | 8min | 23 files |
+| 04 Public Site | 2 | 7min | 9 files |
 
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- [Phase 02-admin-forms]: Zod 4 syntax: z.email() not z.string().email(), error: not message: for custom errors
-- [Phase 02-admin-forms]: FormField render-prop: children receives { isInvalid, errorId } for input styling
-- [Phase 02-admin-forms]: validateRequest returns discriminated union { success, data } | { success, response }
-- [Phase 02-admin-forms]: SearchableSelect filters by option.label via cmdk built-in search
-- [Phase 02-admin-forms]: VehicleForm handles submit internally (no onSubmit prop) -- form owns routing and toast feedback
-- [Phase 02-admin-forms]: ImageManager uses optimistic updates with revert on API failure
-- [Phase 03-admin-data-dashboard]: DataTable uses tanstack-table with manualSorting + manualPagination, consumers bridge nuqs state
-- [Phase 03-admin-data-dashboard]: ALLOWED_SORT allowlist pattern prevents sort injection in API routes
-- [Phase 03-admin-data-dashboard]: useTableFilters hook uses nuqs useQueryStates with 300ms throttle
-- [Phase 03-admin-data-dashboard]: Chart colors use CSS variables (var(--primary), var(--success)) for design system consistency and dark mode
-- [Phase 03-admin-data-dashboard]: Sales trend aggregated server-side into monthly buckets, inventoryByStatus reuses existing count queries
-- [Phase 03-admin-data-dashboard]: Column definitions use getXxxColumns factory pattern accepting onDelete callback
-- [Phase 03-admin-data-dashboard]: Pages wrapped in Suspense boundary for nuqs useSearchParams SSG compatibility
+All decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- Supabase service role key not yet configured in .env.local (noted in PROJECT.md)
+None — milestone complete.
 
 ## Session Continuity
 
-Last session: 2026-03-18T14:27:22.150Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-public-site/04-CONTEXT.md
+Last session: 2026-03-18
+Stopped at: Milestone v1.0 archived
+Resume file: None

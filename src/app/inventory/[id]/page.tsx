@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -13,10 +12,12 @@ import {
   Phone,
   Mail,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchInventory } from "@/lib/inventory";
+import { fetchVehicleById } from "@/lib/inventory";
+import { ImageGallery } from "./image-gallery";
 import { CONTACT } from "@/lib/constants";
 
 interface PageProps {
@@ -25,8 +26,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const vehicles = await fetchInventory();
-  const vehicle = vehicles.find((v) => v.id === id);
+  const vehicle = await fetchVehicleById(id);
 
   if (!vehicle) return { title: "Vehicle Not Found" };
 
@@ -38,8 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function VehicleDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const vehicles = await fetchInventory();
-  const vehicle = vehicles.find((v) => v.id === id);
+  const vehicle = await fetchVehicleById(id);
 
   if (!vehicle) notFound();
 
@@ -63,43 +62,11 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           <div className="grid gap-8 lg:grid-cols-3">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Image */}
-              <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
-                {vehicle.images.length > 0 ? (
-                  <Image
-                    src={vehicle.images[0]}
-                    alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <Car className="h-24 w-24 text-muted-foreground/20" />
-                    <span className="ml-4 text-muted-foreground">
-                      Photos coming soon
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Image thumbnails */}
-              {vehicle.images.length > 1 && (
-                <div className="grid grid-cols-5 gap-2">
-                  {vehicle.images.slice(1, 6).map((img, i) => (
-                    <div
-                      key={i}
-                      className="relative aspect-video overflow-hidden rounded-md bg-muted"
-                    >
-                      <Image
-                        src={img}
-                        alt={`${vehicle.year} ${vehicle.make} ${vehicle.model} - Photo ${i + 2}`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* Image Gallery */}
+              <ImageGallery
+                images={vehicle.images}
+                alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+              />
 
               {/* Description */}
               <div>
