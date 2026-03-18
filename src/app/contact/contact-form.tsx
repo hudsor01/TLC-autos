@@ -1,14 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { z } from "zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+
+const contactFormSchema = z.object({
+  firstName: z.string().min(1, { error: "First name is required" }),
+  lastName: z.string().min(1, { error: "Last name is required" }),
+  email: z.email({ error: "Enter a valid email address" }),
+  phone: z.string().optional(),
+  subject: z.string().min(1, { error: "Please select a subject" }),
+  message: z.string().min(10, { error: "Message must be at least 10 characters" }),
+});
+
+type FormErrors = Partial<Record<keyof z.infer<typeof contactFormSchema>, string>>;
 
 export function ContactForm() {
+  const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  function validateField(name: keyof FormErrors, value: string) {
+    const fieldSchema = contactFormSchema.shape[name];
+    const result = fieldSchema.safeParse(value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: result.success ? undefined : result.error.issues[0]?.message,
+    }));
+  }
 
   if (submitted) {
     return (
@@ -36,7 +60,10 @@ export function ContactForm() {
         <Button
           variant="outline"
           className="mt-4"
-          onClick={() => setSubmitted(false)}
+          onClick={() => {
+            setSubmitted(false);
+            setErrors({});
+          }}
         >
           Send Another Message
         </Button>
@@ -48,34 +75,62 @@ export function ContactForm() {
     <form
       onSubmit={async (e) => {
         e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+
+        const formValues = {
+          firstName: formData.get("firstName") as string,
+          lastName: formData.get("lastName") as string,
+          email: formData.get("email") as string,
+          phone: formData.get("phone") as string,
+          subject: formData.get("subject") as string,
+          message: formData.get("message") as string,
+        };
+
+        const result = contactFormSchema.safeParse(formValues);
+
+        if (!result.success) {
+          const fieldErrors = result.error.flatten().fieldErrors;
+          const newErrors: FormErrors = {};
+          for (const [key, messages] of Object.entries(fieldErrors)) {
+            if (messages && messages.length > 0) {
+              newErrors[key as keyof FormErrors] = messages[0];
+            }
+          }
+          setErrors(newErrors);
+          return;
+        }
+
         setSubmitting(true);
 
-        const formData = new FormData(e.currentTarget);
-        const subject = formData.get("subject") as string;
-        const message = formData.get("message") as string;
-
-        try {
-          await fetch("/api/leads", {
+        toast.promise(
+          fetch("/api/leads", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              firstName: formData.get("firstName"),
-              lastName: formData.get("lastName"),
-              email: formData.get("email"),
-              phone: formData.get("phone") || "",
+              firstName: formValues.firstName,
+              lastName: formValues.lastName,
+              email: formValues.email,
+              phone: formValues.phone || "",
               source: "website",
               status: "new",
-              vehicleInterest: subject === "vehicle-inquiry" ? "Vehicle inquiry from website" : "",
-              notes: `Subject: ${subject}\n\n${message}`,
+              vehicleInterest:
+                formValues.subject === "vehicle-inquiry"
+                  ? "Vehicle inquiry from website"
+                  : "",
+              notes: `Subject: ${formValues.subject}\n\n${formValues.message}`,
             }),
-          });
-        } catch {
-          // Still show success to user even if lead creation fails
-          // (the message was "sent" from their perspective)
-        }
+          }).then((res) => {
+            if (!res.ok) throw new Error("Failed to submit");
+            setSubmitted(true);
+          }),
+          {
+            loading: "Sending your message...",
+            success: "Message sent successfully!",
+            error: "Failed to send message. Please try again.",
+          }
+        );
 
         setSubmitting(false);
-        setSubmitted(true);
       }}
       className="space-y-4"
     >
@@ -84,13 +139,33 @@ export function ContactForm() {
           <label htmlFor="firstName" className="mb-1.5 block text-sm font-medium">
             First Name *
           </label>
-          <Input id="firstName" name="firstName" required placeholder="John" />
+          <Input
+            id="firstName"
+            name="firstName"
+            placeholder="John"
+            aria-invalid={!!errors.firstName}
+            className={cn(errors.firstName && "border-destructive")}
+            onBlur={(e) => validateField("firstName", e.target.value)}
+          />
+          {errors.firstName && (
+            <p className="mt-1 text-sm text-destructive">{errors.firstName}</p>
+          )}
         </div>
         <div>
           <label htmlFor="lastName" className="mb-1.5 block text-sm font-medium">
             Last Name *
           </label>
-          <Input id="lastName" name="lastName" required placeholder="Doe" />
+          <Input
+            id="lastName"
+            name="lastName"
+            placeholder="Doe"
+            aria-invalid={!!errors.lastName}
+            className={cn(errors.lastName && "border-destructive")}
+            onBlur={(e) => validateField("lastName", e.target.value)}
+          />
+          {errors.lastName && (
+            <p className="mt-1 text-sm text-destructive">{errors.lastName}</p>
+          )}
         </div>
       </div>
 
@@ -102,9 +177,14 @@ export function ContactForm() {
           id="email"
           name="email"
           type="email"
-          required
           placeholder="john@example.com"
+          aria-invalid={!!errors.email}
+          className={cn(errors.email && "border-destructive")}
+          onBlur={(e) => validateField("email", e.target.value)}
         />
+        {errors.email && (
+          <p className="mt-1 text-sm text-destructive">{errors.email}</p>
+        )}
       </div>
 
       <div>
@@ -123,7 +203,13 @@ export function ContactForm() {
         <label htmlFor="subject" className="mb-1.5 block text-sm font-medium">
           Subject *
         </label>
-        <Select id="subject" name="subject" required>
+        <Select
+          id="subject"
+          name="subject"
+          aria-invalid={!!errors.subject}
+          className={cn(errors.subject && "border-destructive")}
+          onBlur={(e) => validateField("subject", e.target.value)}
+        >
           <option value="">Select a subject...</option>
           <option value="vehicle-inquiry">Vehicle Inquiry</option>
           <option value="financing">Financing Question</option>
@@ -131,6 +217,9 @@ export function ContactForm() {
           <option value="test-drive">Schedule Test Drive</option>
           <option value="general">General Question</option>
         </Select>
+        {errors.subject && (
+          <p className="mt-1 text-sm text-destructive">{errors.subject}</p>
+        )}
       </div>
 
       <div>
@@ -140,10 +229,15 @@ export function ContactForm() {
         <Textarea
           id="message"
           name="message"
-          required
           rows={5}
           placeholder="Tell us how we can help..."
+          aria-invalid={!!errors.message}
+          className={cn(errors.message && "border-destructive")}
+          onBlur={(e) => validateField("message", e.target.value)}
         />
+        {errors.message && (
+          <p className="mt-1 text-sm text-destructive">{errors.message}</p>
+        )}
       </div>
 
       <Button type="submit" size="lg" className="w-full" disabled={submitting}>
@@ -151,7 +245,7 @@ export function ContactForm() {
       </Button>
 
       <p className="text-xs text-muted-foreground">
-        By submitting this form, you agree to be contacted by {" "}
+        By submitting this form, you agree to be contacted by{" "}
         TLC Autos regarding your inquiry.
       </p>
     </form>
