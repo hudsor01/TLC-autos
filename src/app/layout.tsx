@@ -1,10 +1,25 @@
 import type { Metadata } from "next";
+import { Outfit, Source_Sans_3 } from "next/font/google";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Providers } from "./providers";
 import { SITE_NAME, SITE_DESCRIPTION } from "@/lib/constants";
 import { Toaster } from "sonner";
 import "./globals.css";
+
+const heading = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const body = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-source",
+  display: "swap",
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -31,7 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className={`${heading.variable} ${body.variable} antialiased`}>
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1"><Providers>{children}</Providers></main>

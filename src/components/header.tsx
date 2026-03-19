@@ -30,7 +30,7 @@ export function Header() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
             <Car className="h-8 w-8 text-secondary" />
-            <span className="text-xl font-bold tracking-tight text-primary">
+            <span className="text-xl font-bold tracking-tight text-primary" style={{ fontFamily: "var(--font-heading)" }}>
               {SITE_NAME}
             </span>
           </Link>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Car,
   Shield,
@@ -90,38 +91,59 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-muted">
         <div className="container relative mx-auto px-4 pt-20 pb-28 md:pt-28 md:pb-36 lg:pt-36 lg:pb-44">
-          <div className="max-w-3xl">
-            <p className="text-caption mb-5 text-secondary tracking-[0.2em]">
-              Family-Owned Dealership in North Texas
-            </p>
-            <h1 className="text-display">
-              Find Your Perfect{" "}
-              <br className="hidden sm:block" />
-              Ride in <span className="text-secondary">North Texas</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-              Quality pre-owned vehicles at honest prices. Serving the DFW
-              metroplex with integrity and care.
-            </p>
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Button
-                asChild
-                size="xl"
-                className="group bg-secondary text-secondary-foreground shadow-lg shadow-secondary/25 hover:bg-secondary/90"
-              >
-                <Link href="/inventory">
-                  Browse Inventory
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="xl"
-                variant="outline"
-                className="border-border bg-card text-foreground hover:bg-muted"
-              >
-                <Link href="/financing">Get Pre-Approved</Link>
-              </Button>
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div className="max-w-xl">
+              <p className="text-caption mb-5 text-secondary tracking-[0.2em]">
+                Family-Owned Dealership in North Texas
+              </p>
+              <h1 className="text-display">
+                Find Your Perfect{" "}
+                <br className="hidden sm:block" />
+                Ride in <span className="text-secondary">North Texas</span>
+              </h1>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+                Quality pre-owned vehicles at honest prices. Serving the DFW
+                metroplex with integrity and care.
+              </p>
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <Button
+                  asChild
+                  size="xl"
+                  className="group bg-secondary text-secondary-foreground shadow-lg shadow-secondary/25 hover:bg-secondary/90"
+                >
+                  <Link href="/inventory">
+                    Browse Inventory
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="xl"
+                  variant="outline"
+                  className="border-border bg-card text-foreground hover:bg-muted"
+                >
+                  <Link href="/financing">Get Pre-Approved</Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="relative hidden lg:block">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl shadow-black/10">
+                <Image
+                  src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1200&q=85&auto=format&fit=crop"
+                  alt="Premium pre-owned vehicle on a dealership lot"
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 50vw, 0vw"
+                />
+              </div>
+              <div className="absolute -bottom-4 -left-4 rounded-xl border border-border bg-card px-5 py-3 shadow-lg">
+                <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
+                  New Arrivals Weekly
+                </p>
+                <p className="text-xs text-muted-foreground">Fresh inventory added every week</p>
+              </div>
             </div>
           </div>
         </div>
