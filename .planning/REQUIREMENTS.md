@@ -9,10 +9,10 @@ Requirements for the UI Polish milestone. Each maps to roadmap phases.
 
 ### Design System
 
-- [ ] **DSYS-01**: Site renders with light-only color scheme — no dark mode media query, `color-scheme: light` set
-- [ ] **DSYS-02**: CSS token palette evolved for light backgrounds — navy/crimson palette refined for premium aesthetic
-- [ ] **DSYS-03**: Animation utility classes defined in globals.css for scroll-reveal and hover transitions
-- [ ] **DSYS-04**: Libraries installed — motion, embla-carousel-react, yet-another-react-lightbox, tw-animate-css
+- [x] **DSYS-01**: Site renders with light-only color scheme — no dark mode media query, `color-scheme: light` set
+- [x] **DSYS-02**: CSS token palette evolved for light backgrounds — navy/crimson palette refined for premium aesthetic
+- [x] **DSYS-03**: Animation utility classes defined in globals.css for scroll-reveal and hover transitions
+- [x] **DSYS-04**: Libraries installed — motion, embla-carousel-react, yet-another-react-lightbox, tw-animate-css
 - [ ] **DSYS-05**: Admin dashboard remains functional after dark mode removal
 
 ### Shared Components
@@ -88,10 +88,10 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DSYS-01 | Phase 5 | Pending |
-| DSYS-02 | Phase 5 | Pending |
-| DSYS-03 | Phase 5 | Pending |
-| DSYS-04 | Phase 5 | Pending |
+| DSYS-01 | Phase 5 | Complete |
+| DSYS-02 | Phase 5 | Complete |
+| DSYS-03 | Phase 5 | Complete |
+| DSYS-04 | Phase 5 | Complete |
 | DSYS-05 | Phase 5 | Pending |
 | COMP-01 | Phase 6 | Pending |
 | COMP-02 | Phase 6 | Pending |
