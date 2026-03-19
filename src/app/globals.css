@@ -1,6 +1,21 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+/* ================================================================
+   TLC AUTOS — DESIGN SYSTEM
+   This file is the single source of truth for all visual tokens.
+   Every color, radius, shadow, spacing rhythm, and typographic
+   decision lives here. Components consume these via Tailwind
+   utilities and CSS variables — nothing is hard-coded elsewhere.
+   ================================================================ */
+
+/* ────────────────────────────────────────────────────────────────
+   1. TAILWIND THEME BRIDGE
+   Maps CSS custom properties → Tailwind utility classes.
+   e.g. --color-primary → bg-primary, text-primary, border-primary
+   ──────────────────────────────────────────────────────────────── */
 @theme inline {
+  /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
@@ -18,42 +33,318 @@
   --color-ring: var(--ring);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+
+  /* Typography — next/font injects --font-outfit and --font-source on <body> */
+  --font-sans: var(--font-source, "Source Sans 3"), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-outfit, "Outfit"), system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Radii */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  /* Shadows */
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-dialog: var(--shadow-dialog);
 }
 
+/* ────────────────────────────────────────────────────────────────
+   2. LIGHT MODE TOKENS (default)
+   Brand palette: Navy (#1e3a5f) + Burgundy (#a81225)
+   Surfaces: clean whites, warm grays
+   ──────────────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  /* ── Surfaces ── */
+  --background: #faf9f7;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --muted: #f5f3f0;
+  --muted-foreground: #475569;
+
+  /* ── Brand: Primary (Navy) ── */
   --primary: #1e3a5f;
   --primary-foreground: #ffffff;
-  --secondary: #c8102e;
+
+  /* ── Brand: Secondary (Burgundy) ── */
+  --secondary: #a81225;
   --secondary-foreground: #ffffff;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --accent: #dbeafe;
+
+  /* ── Interactive accents ── */
+  --accent: #e8f0fa;
   --accent-foreground: #1e3a5f;
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
+
+  /* ── Borders & inputs ── */
+  --border: #e8e4df;
+  --input: #e8e4df;
   --ring: #1e3a5f;
+
+  /* ── Semantic: Destructive ── */
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
+
+  /* ── Semantic: Success ── */
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+
+  /* ── Semantic: Warning ── */
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+
+  /* ── Admin sidebar ── */
+  --sidebar: #152d4a;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-accent: rgba(255, 255, 255, 0.12);
+
+  /* ── Radius ── */
   --radius: 0.625rem;
+
+  /* ── Shadows ── */
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   3. BASE STYLES
+   Applied globally to html/body. Sets up font rendering,
+   scroll behavior, and selection colors.
+   ──────────────────────────────────────────────────────────────── */
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  line-height: 1.6;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   4. TYPOGRAPHY SCALE
+   Utility classes for consistent heading/body hierarchy.
+   Components use these instead of ad-hoc font sizes.
+   ──────────────────────────────────────────────────────────────── */
+.text-display {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.text-headline {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.text-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.text-body-lg {
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+.text-caption {
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   5. FOCUS & INTERACTION STATES
+   Consistent focus rings, transitions, and interactive feedback
+   across all focusable elements.
+   ──────────────────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   6. ANIMATION UTILITIES
+   Scroll-reveal entrance animations and hover transition helpers.
+   All animations use transform + opacity only (GPU-composited).
+   Reduced motion: Section 5 prefers-reduced-motion block kills
+   all animation/transition durations automatically.
+   ──────────────────────────────────────────────────────────────── */
+
+/* Fade up entrance — default scroll-reveal */
+.animate-fade-up {
+  animation: fade-up 400ms ease-out both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in (no translation) */
+.animate-fade-in {
+  animation: fade-in 400ms ease-out both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide up from further (for hero elements) */
+.animate-slide-up {
+  animation: slide-up 500ms ease-out both;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger delay utilities for groups */
+.delay-75 { animation-delay: 75ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-225 { animation-delay: 225ms; }
+.delay-300 { animation-delay: 300ms; }
+
+/* Hover transition base — apply to cards, buttons, interactive elements */
+.hover-lift {
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   7. LAYOUT PRIMITIVES
+   Reusable section/container patterns for public pages.
+   ──────────────────────────────────────────────────────────────── */
+.section-padding {
+  padding-top: clamp(3rem, 6vw, 6rem);
+  padding-bottom: clamp(3rem, 6vw, 6rem);
+}
+
+.section-header {
+  text-align: center;
+  max-width: 40rem;
+  margin-inline: auto;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   8. FORM ELEMENTS
+   Baseline form styling that respects the design tokens.
+   ──────────────────────────────────────────────────────────────── */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="search"],
+input[type="password"],
+input[type="url"],
+textarea,
+select {
+  accent-color: var(--primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.7;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   9. SCROLLBAR
+   Slim, brand-tinted scrollbar for Webkit/Blink browsers.
+   ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   10. PRINT
+   Strip decorative elements for clean printed output.
+   ──────────────────────────────────────────────────────────────── */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  header,
+  footer,
+  nav,
+  aside,
+  .no-print {
+    display: none !important;
+  }
 }

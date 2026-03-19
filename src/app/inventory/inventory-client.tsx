@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,110 +11,146 @@ import {
   Search,
   SlidersHorizontal,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { Vehicle } from "@/lib/inventory";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CONTACT } from "@/lib/constants";
+import { useInventoryFilters } from "@/hooks/use-inventory-filters";
 
-interface FilterOptions {
+interface InventoryVehicle {
+  id: string;
+  year: number;
+  make: string;
+  model: string;
+  trim: string;
+  bodyStyle: string;
+  mileage: number;
+  sellingPrice: number;
+  transmission: string;
+  fuelType: string;
+  drivetrain: string;
+  images: string[];
+}
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+interface FilterOpts {
   makes: string[];
-  bodyStyles: string[];
-  years: number[];
-  priceRanges: { label: string; min: number; max: number }[];
+  models: string[];
+  yearRange: { min: number; max: number };
+  priceRange: { min: number; max: number };
 }
 
-interface InventoryClientProps {
-  vehicles: Vehicle[];
-  filterOptions: FilterOptions;
+interface InventoryData {
+  vehicles: InventoryVehicle[];
+  pagination: Pagination;
+  filterOptions: FilterOpts;
 }
 
-export function InventoryClient({
-  vehicles,
-  filterOptions,
-}: InventoryClientProps) {
-  const [search, setSearch] = useState("");
-  const [makeFilter, setMakeFilter] = useState("");
-  const [bodyFilter, setBodyFilter] = useState("");
-  const [yearFilter, setYearFilter] = useState("");
-  const [priceFilter, setPriceFilter] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
+export function InventoryClient() {
+  const [filters, setFilters] = useInventoryFilters();
+  const [data, setData] = useState<InventoryData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
 
-  const filtered = useMemo(() => {
-    let result = vehicles.filter((v) => v.status === "available");
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (filters.search) params.set("search", filters.search);
+      if (filters.make) params.set("make", filters.make);
+      if (filters.model) params.set("model", filters.model);
+      if (filters.yearMin) params.set("yearMin", String(filters.yearMin));
+      if (filters.yearMax) params.set("yearMax", String(filters.yearMax));
+      if (filters.priceMin) params.set("priceMin", String(filters.priceMin));
+      if (filters.priceMax) params.set("priceMax", String(filters.priceMax));
+      if (filters.sort && filters.sort !== "newest")
+        params.set("sort", filters.sort);
+      params.set("page", String(filters.page));
 
-    // Search
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (v) =>
-          v.make.toLowerCase().includes(q) ||
-          v.model.toLowerCase().includes(q) ||
-          v.year.toString().includes(q) ||
-          v.trim.toLowerCase().includes(q) ||
-          v.description.toLowerCase().includes(q)
-      );
+      const res = await fetch(`/api/inventory?${params}`);
+      const json = await res.json();
+      setData(json);
+    } catch {
+      // Silently handle -- data stays null showing empty state
+    } finally {
+      setLoading(false);
     }
+  }, [filters]);
 
-    // Filters
-    if (makeFilter) result = result.filter((v) => v.make === makeFilter);
-    if (bodyFilter) result = result.filter((v) => v.bodyStyle === bodyFilter);
-    if (yearFilter) result = result.filter((v) => v.year === parseInt(yearFilter));
-    if (priceFilter) {
-      const range = filterOptions.priceRanges[parseInt(priceFilter)];
-      if (range) result = result.filter((v) => v.price >= range.min && v.price < range.max);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // Generate year options from filter range
+  const yearOptions: number[] = [];
+  if (data?.filterOptions.yearRange) {
+    const { min, max } = data.filterOptions.yearRange;
+    for (let y = max; y >= min; y--) {
+      yearOptions.push(y);
     }
+  }
 
-    // Sort
-    switch (sortBy) {
-      case "price-low":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "mileage":
-        result.sort((a, b) => a.mileage - b.mileage);
-        break;
-      case "year":
-        result.sort((a, b) => b.year - a.year);
-        break;
-      default:
-        result.sort(
-          (a, b) =>
-            new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
-        );
-    }
-
-    return result;
-  }, [vehicles, search, makeFilter, bodyFilter, yearFilter, priceFilter, sortBy, filterOptions]);
-
-  const hasActiveFilters = makeFilter || bodyFilter || yearFilter || priceFilter;
+  const hasActiveFilters =
+    filters.make ||
+    filters.model ||
+    filters.yearMin ||
+    filters.yearMax ||
+    filters.priceMin ||
+    filters.priceMax ||
+    filters.search;
 
   const clearFilters = () => {
-    setMakeFilter("");
-    setBodyFilter("");
-    setYearFilter("");
-    setPriceFilter("");
-    setSearch("");
+    setFilters({
+      search: "",
+      make: "",
+      model: "",
+      yearMin: null,
+      yearMax: null,
+      priceMin: null,
+      priceMax: null,
+      sort: "newest",
+      page: 1,
+    });
   };
+
+  // Find the active price range label for badges
+  const activePriceLabel = (() => {
+    if (!filters.priceMin && !filters.priceMax) return null;
+    if (filters.priceMax && !filters.priceMin)
+      return `Under $${(filters.priceMax / 1000).toFixed(0)}k`;
+    if (filters.priceMin && !filters.priceMax)
+      return `$${(filters.priceMin / 1000).toFixed(0)}k+`;
+    if (filters.priceMin && filters.priceMax)
+      return `$${(filters.priceMin / 1000).toFixed(0)}k - $${(filters.priceMax / 1000).toFixed(0)}k`;
+    return null;
+  })();
 
   return (
     <section className="py-8">
       <div className="container mx-auto px-4">
-        {/* Search and Filter Bar */}
+        {/* Search and Sort Bar */}
         <div className="mb-8 space-y-4">
           <div className="flex flex-col gap-4 sm:flex-row">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search by make, model, year..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by make, model..."
+                value={filters.search}
+                onChange={(e) =>
+                  setFilters({ search: e.target.value, page: 1 })
+                }
                 className="pl-10"
               />
             </div>
@@ -128,8 +164,10 @@ export function InventoryClient({
                 Filters
               </Button>
               <Select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                value={filters.sort}
+                onChange={(e) =>
+                  setFilters({ sort: e.target.value, page: 1 })
+                }
                 className="w-[180px]"
               >
                 <option value="newest">Newest First</option>
@@ -148,88 +186,155 @@ export function InventoryClient({
             }`}
           >
             <Select
-              value={makeFilter}
-              onChange={(e) => setMakeFilter(e.target.value)}
+              value={filters.make}
+              onChange={(e) =>
+                setFilters({ make: e.target.value, model: "", page: 1 })
+              }
             >
               <option value="">All Makes</option>
-              {filterOptions.makes.map((make) => (
-                <option key={make} value={make}>
-                  {make}
+              {(data?.filterOptions.makes ?? []).map((m) => (
+                <option key={m} value={m}>
+                  {m}
                 </option>
               ))}
             </Select>
             <Select
-              value={bodyFilter}
-              onChange={(e) => setBodyFilter(e.target.value)}
+              value={filters.model}
+              onChange={(e) =>
+                setFilters({ model: e.target.value, page: 1 })
+              }
             >
-              <option value="">All Body Styles</option>
-              {filterOptions.bodyStyles.map((style) => (
-                <option key={style} value={style}>
-                  {style}
+              <option value="">All Models</option>
+              {(data?.filterOptions.models ?? []).map((m) => (
+                <option key={m} value={m}>
+                  {m}
                 </option>
               ))}
             </Select>
+            <div className="flex gap-2">
+              <Select
+                value={filters.yearMin?.toString() ?? ""}
+                onChange={(e) =>
+                  setFilters({
+                    yearMin: e.target.value ? parseInt(e.target.value) : null,
+                    page: 1,
+                  })
+                }
+              >
+                <option value="">Year From</option>
+                {yearOptions.map((y) => (
+                  <option key={y} value={y.toString()}>
+                    {y}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                value={filters.yearMax?.toString() ?? ""}
+                onChange={(e) =>
+                  setFilters({
+                    yearMax: e.target.value ? parseInt(e.target.value) : null,
+                    page: 1,
+                  })
+                }
+              >
+                <option value="">Year To</option>
+                {yearOptions.map((y) => (
+                  <option key={y} value={y.toString()}>
+                    {y}
+                  </option>
+                ))}
+              </Select>
+            </div>
             <Select
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
-            >
-              <option value="">All Years</option>
-              {filterOptions.years.map((year) => (
-                <option key={year} value={year.toString()}>
-                  {year}
-                </option>
-              ))}
-            </Select>
-            <Select
-              value={priceFilter}
-              onChange={(e) => setPriceFilter(e.target.value)}
+              value={
+                filters.priceMin && filters.priceMax
+                  ? `${filters.priceMin}-${filters.priceMax}`
+                  : filters.priceMax
+                    ? `0-${filters.priceMax}`
+                    : filters.priceMin
+                      ? `${filters.priceMin}-`
+                      : ""
+              }
+              onChange={(e) => {
+                const val = e.target.value;
+                if (!val) {
+                  setFilters({ priceMin: null, priceMax: null, page: 1 });
+                } else {
+                  const [min, max] = val.split("-");
+                  setFilters({
+                    priceMin: min ? parseInt(min) : null,
+                    priceMax: max ? parseInt(max) : null,
+                    page: 1,
+                  });
+                }
+              }}
             >
               <option value="">All Prices</option>
-              {filterOptions.priceRanges.map((range, i) => (
-                <option key={range.label} value={i.toString()}>
-                  {range.label}
-                </option>
-              ))}
+              <option value="0-15000">Under $15k</option>
+              <option value="15000-25000">$15k - $25k</option>
+              <option value="25000-35000">$25k - $35k</option>
+              <option value="35000-">$35k+</option>
             </Select>
           </div>
 
           {/* Active filters */}
           {hasActiveFilters && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Active filters:</span>
-              {makeFilter && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                Active filters:
+              </span>
+              {filters.search && (
                 <Badge variant="secondary" className="gap-1">
-                  {makeFilter}
+                  &quot;{filters.search}&quot;
                   <X
                     className="h-3 w-3 cursor-pointer"
-                    onClick={() => setMakeFilter("")}
+                    onClick={() => setFilters({ search: "", page: 1 })}
                   />
                 </Badge>
               )}
-              {bodyFilter && (
+              {filters.make && (
                 <Badge variant="secondary" className="gap-1">
-                  {bodyFilter}
+                  {filters.make}
                   <X
                     className="h-3 w-3 cursor-pointer"
-                    onClick={() => setBodyFilter("")}
+                    onClick={() =>
+                      setFilters({ make: "", model: "", page: 1 })
+                    }
                   />
                 </Badge>
               )}
-              {yearFilter && (
+              {filters.model && (
                 <Badge variant="secondary" className="gap-1">
-                  {yearFilter}
+                  {filters.model}
                   <X
                     className="h-3 w-3 cursor-pointer"
-                    onClick={() => setYearFilter("")}
+                    onClick={() => setFilters({ model: "", page: 1 })}
                   />
                 </Badge>
               )}
-              {priceFilter && (
+              {(filters.yearMin || filters.yearMax) && (
                 <Badge variant="secondary" className="gap-1">
-                  {filterOptions.priceRanges[parseInt(priceFilter)]?.label}
+                  {filters.yearMin && filters.yearMax
+                    ? `${filters.yearMin} - ${filters.yearMax}`
+                    : filters.yearMin
+                      ? `${filters.yearMin}+`
+                      : `Up to ${filters.yearMax}`}
                   <X
                     className="h-3 w-3 cursor-pointer"
-                    onClick={() => setPriceFilter("")}
+                    onClick={() =>
+                      setFilters({ yearMin: null, yearMax: null, page: 1 })
+                    }
+                  />
+                </Badge>
+              )}
+              {activePriceLabel && (
+                <Badge variant="secondary" className="gap-1">
+                  {activePriceLabel}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() =>
+                      setFilters({ priceMin: null, priceMax: null, page: 1 })
+                    }
                   />
                 </Badge>
               )}
@@ -242,17 +347,38 @@ export function InventoryClient({
 
         {/* Results count */}
         <p className="mb-6 text-sm text-muted-foreground">
-          Showing {filtered.length} vehicle{filtered.length !== 1 ? "s" : ""}
+          {loading
+            ? "Loading vehicles..."
+            : `Showing ${data?.vehicles.length ?? 0} of ${data?.pagination.total ?? 0} vehicle${(data?.pagination.total ?? 0) !== 1 ? "s" : ""}`}
         </p>
 
-        {/* Vehicle Grid */}
-        {filtered.length > 0 ? (
+        {/* Loading skeleton grid */}
+        {loading && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((vehicle) => (
+            {Array.from({ length: 12 }).map((_, i) => (
+              <Card key={i} className="overflow-hidden">
+                <Skeleton className="aspect-[4/3] w-full rounded-none" />
+                <CardContent className="pt-4 space-y-2">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-7 w-1/3" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Vehicle Grid */}
+        {!loading && data && data.vehicles.length > 0 && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {data.vehicles.map((vehicle) => (
               <VehicleCard key={vehicle.id} vehicle={vehicle} />
             ))}
           </div>
-        ) : (
+        )}
+
+        {/* Empty state */}
+        {!loading && data && data.vehicles.length === 0 && (
           <div className="py-20 text-center">
             <Car className="mx-auto h-16 w-16 text-muted-foreground/30" />
             <h3 className="mt-4 text-lg font-semibold">No vehicles found</h3>
@@ -261,6 +387,33 @@ export function InventoryClient({
             </p>
             <Button variant="outline" className="mt-4" onClick={clearFilters}>
               Clear all filters
+            </Button>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && data && data.pagination.totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={filters.page <= 1}
+              onClick={() => setFilters({ page: filters.page - 1 })}
+            >
+              <ChevronLeft className="mr-1 h-4 w-4" />
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {filters.page} of {data.pagination.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={filters.page >= data.pagination.totalPages}
+              onClick={() => setFilters({ page: filters.page + 1 })}
+            >
+              Next
+              <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
         )}
@@ -284,10 +437,10 @@ export function InventoryClient({
   );
 }
 
-function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
+function VehicleCard({ vehicle }: { vehicle: InventoryVehicle }) {
   return (
     <Card className="group overflow-hidden transition-shadow hover:shadow-lg">
-      {/* Image placeholder */}
+      {/* Image */}
       <div className="relative aspect-[4/3] bg-muted">
         {vehicle.images.length > 0 ? (
           <Image
@@ -297,23 +450,30 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center">
+          <div className="flex h-full flex-col items-center justify-center gap-1">
             <Car className="h-16 w-16 text-muted-foreground/30" />
+            <span className="text-xs text-muted-foreground/50">
+              No photos available
+            </span>
           </div>
         )}
-        <Badge className="absolute right-2 top-2" variant="secondary">
-          {vehicle.bodyStyle}
-        </Badge>
+        {vehicle.bodyStyle && (
+          <Badge className="absolute right-2 top-2" variant="secondary">
+            {vehicle.bodyStyle}
+          </Badge>
+        )}
       </div>
 
       <CardContent className="pt-4">
         <h3 className="text-lg font-semibold">
           {vehicle.year} {vehicle.make} {vehicle.model}
         </h3>
-        <p className="text-sm text-muted-foreground">{vehicle.trim}</p>
+        {vehicle.trim && (
+          <p className="text-sm text-muted-foreground">{vehicle.trim}</p>
+        )}
 
         <p className="mt-2 text-2xl font-bold text-primary">
-          ${vehicle.price.toLocaleString()}
+          ${vehicle.sellingPrice.toLocaleString()}
         </p>
 
         <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">

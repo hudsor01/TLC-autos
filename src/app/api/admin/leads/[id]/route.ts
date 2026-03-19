@@ -1,36 +1,78 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/supabase/auth-guard";
+import { validateRequest } from "@/lib/api-validation";
+import { leadSchema } from "@/lib/schemas";
+import { camelKeys, snakeKeys } from "@/lib/utils";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
 export async function GET(_req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  const lead = await prisma.lead.findUnique({
-    where: { id },
-    include: {
-      customer: true,
-      followUps: { orderBy: { createdAt: "desc" } },
-    },
-  });
+  try {
+    const { id } = await params;
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
 
-  if (!lead) {
-    return NextResponse.json({ error: "Lead not found" }, { status: 404 });
+    const { data: lead, error } = await supabase
+      .from("leads")
+      .select("*, customers(*), follow_ups(*)")
+      .eq("id", id)
+      .order("created_at", { referencedTable: "follow_ups", ascending: false })
+      .single();
+
+    if (error || !lead) {
+      return NextResponse.json({ error: "Lead not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(camelKeys(lead));
+  } catch {
+    return NextResponse.json({ error: "Failed to fetch lead" }, { status: 500 });
   }
-
-  return NextResponse.json(lead);
 }
 
 export async function PUT(req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  const body = await req.json();
-  const lead = await prisma.lead.update({ where: { id }, data: body });
-  return NextResponse.json(lead);
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
+
+    const validation = validateRequest(leadSchema, body);
+    if (!validation.success) return validation.response;
+    const dbData = snakeKeys(validation.data);
+
+    const { data: lead, error } = await supabase
+      .from("leads")
+      .update(dbData)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(camelKeys(lead));
+  } catch {
+    return NextResponse.json({ error: "Failed to update lead" }, { status: 500 });
+  }
 }
 
 export async function DELETE(_req: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
-  await prisma.lead.delete({ where: { id } });
-  return NextResponse.json({ success: true });
+  try {
+    const { id } = await params;
+    const { supabase, error: authError } = await requireAuth();
+    if (authError) return authError;
+
+    const { error } = await supabase.from("leads").delete().eq("id", id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to delete lead" }, { status: 500 });
+  }
 }

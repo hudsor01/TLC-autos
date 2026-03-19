@@ -1,205 +1,214 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { toast } from "sonner";
+import { DataTable } from "@/components/admin/data-table";
+import { DataTablePagination } from "@/components/admin/data-table-pagination";
+import { DataTableToolbar } from "@/components/admin/data-table-toolbar";
+import { useTableFilters, buildApiParams } from "@/hooks/use-table-filters";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+  getLeadColumns,
+  type LeadRow,
+} from "@/components/admin/columns/lead-columns";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-
-interface Lead {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  source: string;
-  vehicleInterest: string;
-  status: string;
-  followUps?: { _id: string }[];
-  createdAt?: string;
-}
+import { Card, CardContent } from "@/components/ui/card";
+import { UserPlus, Plus } from "lucide-react";
+import type { SortingState, PaginationState } from "@tanstack/react-table";
 
 const STATUS_OPTIONS = [
-  "all",
-  "new",
-  "contacted",
-  "qualified",
-  "converted",
-  "lost",
-] as const;
-
-export function statusBadgeVariant(
-  status: string
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "new":
-      return "default";
-    case "contacted":
-      return "secondary";
-    case "qualified":
-      return "outline";
-    case "converted":
-      return "default";
-    case "lost":
-      return "destructive";
-    default:
-      return "secondary";
-  }
-}
-
-function statusBadgeClass(status: string): string {
-  switch (status) {
-    case "new":
-      return "bg-blue-500 text-white border-blue-500";
-    case "contacted":
-      return "bg-yellow-500 text-white border-yellow-500";
-    case "qualified":
-      return "bg-purple-500 text-white border-purple-500";
-    case "converted":
-      return "bg-green-500 text-white border-green-500";
-    case "lost":
-      return "bg-red-500 text-white border-red-500";
-    default:
-      return "";
-  }
-}
+  { label: "New", value: "new" },
+  { label: "Contacted", value: "contacted" },
+  { label: "Qualified", value: "qualified" },
+  { label: "Lost", value: "lost" },
+  { label: "Converted", value: "converted" },
+];
 
 export default function LeadsPage() {
-  const [leads, setLeads] = useState<Lead[]>([]);
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-20 text-muted-foreground">Loading...</div>}>
+      <LeadsContent />
+    </Suspense>
+  );
+}
+
+function LeadsContent() {
+  const router = useRouter();
+  const [filters, setFilters] = useTableFilters({
+    defaultSort: "created_at",
+  });
+
+  const [data, setData] = useState<LeadRow[]>([]);
+  const [pageCount, setPageCount] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [deleteTarget, setDeleteTarget] = useState<LeadRow | null>(null);
+
+  const sorting: SortingState = [
+    { id: filters.sort, desc: filters.order === "desc" },
+  ];
+  const pagination: PaginationState = {
+    pageIndex: filters.page - 1,
+    pageSize: 20,
+  };
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = buildApiParams(filters);
+      const res = await fetch(`/api/admin/leads?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch");
+      const json = await res.json();
+      setData(json.leads);
+      setPageCount(json.pagination.totalPages);
+      setTotalItems(json.pagination.total);
+    } catch {
+      toast.error("Failed to load leads");
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
 
   useEffect(() => {
-    const fetchLeads = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const params = new URLSearchParams();
-        if (search) params.set("search", search);
-        if (statusFilter !== "all") params.set("status", statusFilter);
-        const res = await fetch(`/api/admin/leads?${params.toString()}`);
-        if (!res.ok) throw new Error("Failed to fetch leads");
-        const data = await res.json();
-        setLeads(data.leads || data);
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
+    fetchData();
+  }, [fetchData]);
+
+  function handleSortingChange(
+    updaterOrValue: SortingState | ((old: SortingState) => SortingState)
+  ) {
+    const next =
+      typeof updaterOrValue === "function"
+        ? updaterOrValue(sorting)
+        : updaterOrValue;
+    if (next.length > 0) {
+      setFilters({
+        sort: next[0].id,
+        order: next[0].desc ? "desc" : "asc",
+        page: 1,
+      });
+    }
+  }
+
+  function handlePaginationChange(
+    updaterOrValue:
+      | PaginationState
+      | ((old: PaginationState) => PaginationState)
+  ) {
+    const next =
+      typeof updaterOrValue === "function"
+        ? updaterOrValue(pagination)
+        : updaterOrValue;
+    setFilters({ page: next.pageIndex + 1 });
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    toast.promise(
+      fetch(`/api/admin/leads/${deleteTarget.id}`, {
+        method: "DELETE",
+      }).then((res) => {
+        if (!res.ok) throw new Error("Failed to delete");
+      }),
+      {
+        loading: "Deleting lead...",
+        success: () => {
+          setDeleteTarget(null);
+          fetchData();
+          return "Lead deleted";
+        },
+        error: "Failed to delete lead",
       }
-    };
+    );
+  }
 
-    const debounce = setTimeout(fetchLeads, 300);
-    return () => clearTimeout(debounce);
-  }, [search, statusFilter]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
+  const columns = getLeadColumns({ onDelete: setDeleteTarget });
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Leads</h1>
+        <div className="flex items-center gap-2">
+          <UserPlus className="h-6 w-6" />
+          <h1 className="text-2xl font-bold">Leads</h1>
+        </div>
+        <Button asChild>
+          <Link href="/admin/leads/new">
+            <Plus className="mr-1 h-4 w-4" /> Add Lead
+          </Link>
+        </Button>
       </div>
 
-      {/* Search */}
-      <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search leads..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+      <Card>
+        <CardContent className="pt-6">
+          <DataTableToolbar
+            search={filters.search}
+            onSearchChange={(v) => setFilters({ search: v, page: 1 })}
+            statusOptions={STATUS_OPTIONS}
+            status={filters.status}
+            onStatusChange={(v) => setFilters({ status: v, page: 1 })}
+            onClear={() => setFilters({ search: "", status: "", page: 1 })}
           />
-        </div>
-        <Button type="submit" variant="outline" size="sm">
-          Search
-        </Button>
-      </form>
+        </CardContent>
+      </Card>
 
-      {/* Error */}
-      {error && (
-        <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
-          {error}
-        </div>
+      <Card>
+        <CardContent className="p-0">
+          <DataTable
+            columns={columns}
+            data={data}
+            pageCount={pageCount}
+            sorting={sorting}
+            onSortingChange={handleSortingChange}
+            pagination={pagination}
+            onPaginationChange={handlePaginationChange}
+            isLoading={loading}
+            onRowClick={(row) => router.push(`/admin/leads/${row.id}`)}
+          />
+        </CardContent>
+      </Card>
+
+      {pageCount > 1 && (
+        <DataTablePagination
+          pageIndex={pagination.pageIndex}
+          pageCount={pageCount}
+          onPageChange={(p) => setFilters({ page: p + 1 })}
+          totalItems={totalItems}
+        />
       )}
 
-      {/* Status Tabs */}
-      <Tabs value={statusFilter} onValueChange={setStatusFilter}>
-        <TabsList>
-          {STATUS_OPTIONS.map((status) => (
-            <TabsTrigger key={status} value={status} className="capitalize">
-              {status}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {STATUS_OPTIONS.map((tab) => (
-          <TabsContent key={tab} value={tab}>
-            {loading ? (
-              <div className="py-8 text-center text-muted-foreground">
-                Loading leads...
-              </div>
-            ) : leads.length === 0 ? (
-              <div className="py-8 text-center text-muted-foreground">
-                No leads found.
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Source</TableHead>
-                    <TableHead>Vehicle Interest</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Follow-ups</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {leads.map((lead) => (
-                    <TableRow key={lead._id}>
-                      <TableCell className="font-medium">
-                        {lead.firstName} {lead.lastName}
-                      </TableCell>
-                      <TableCell>{lead.source || "N/A"}</TableCell>
-                      <TableCell>{lead.vehicleInterest || "N/A"}</TableCell>
-                      <TableCell>
-                        <Badge className={statusBadgeClass(lead.status)}>
-                          {lead.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">
-                          {lead.followUps?.length || 0}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Link href={`/admin/leads/${lead._id}`}>
-                          <Button variant="outline" size="sm">
-                            View
-                          </Button>
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
+      <Dialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Lead</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete{" "}
+            <strong>
+              {deleteTarget?.firstName} {deleteTarget?.lastName}
+            </strong>
+            ? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
