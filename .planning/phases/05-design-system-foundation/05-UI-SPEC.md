@@ -1,7 +1,7 @@
 ---
 phase: 5
 slug: design-system-foundation
-status: draft
+status: approved
 shadcn_initialized: true
 preset: default (neutral base)
 created: 2026-03-18
@@ -46,20 +46,16 @@ Exceptions: Section vertical padding uses `clamp(3rem, 6vw, 6rem)` (48px-96px) v
 
 ## Typography
 
-This phase does not modify typography. The existing scale in globals.css Section 5 is locked. Documented here as the contract for downstream consumers.
+This phase does not modify typography. The existing scale in `globals.css` Section 5 is locked and unchanged.
 
-| Role | Size | Weight | Line Height | Font Family |
-|------|------|--------|-------------|-------------|
-| Display | clamp(2.5rem, 5vw, 4rem) | 800 | 1.05 | Outfit (--font-heading) |
-| Headline | clamp(1.5rem, 3vw, 2.25rem) | 700 | 1.15 | Outfit (--font-heading) |
-| Title | clamp(1.125rem, 2vw, 1.5rem) | 600 | 1.3 | Outfit (--font-heading) |
-| Body (large) | 18px (1.125rem) | 400 | 1.7 | Source Sans 3 (--font-sans) |
-| Body (default) | 16px (1rem) | 400 | 1.6 | Source Sans 3 (--font-sans) |
-| Caption | 13px (0.8125rem) | 600 | inherit | Outfit (--font-heading) |
+**Contract:** No typography changes this phase. Downstream phases consume the existing scale defined in `globals.css` Section 5 (lines 200-235).
 
-Letter spacing: Display -0.03em, Headline -0.02em, Title -0.01em, Caption 0.1em (uppercase).
+| Role | Font Family |
+|------|-------------|
+| Headings | Outfit (--font-heading) |
+| Body | Source Sans 3 (--font-sans) |
 
-Weights used: 400 (regular body), 500 (medium -- available, sparingly used), 600 (semibold titles/captions), 700 (bold headlines), 800 (extrabold display).
+See `src/app/globals.css` Section 5 for the full existing scale reference (6 roles, 5 weights). This phase preserves it exactly as-is.
 
 ---
 
@@ -261,11 +257,11 @@ bun add motion tw-animate-css embla-carousel-react embla-carousel embla-carousel
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: FLAG (non-blocking — body line-height reference)
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved 2026-03-18
