@@ -13,7 +13,7 @@ Requirements for the UI Polish milestone. Each maps to roadmap phases.
 - [x] **DSYS-02**: CSS token palette evolved for light backgrounds — navy/crimson palette refined for premium aesthetic
 - [x] **DSYS-03**: Animation utility classes defined in globals.css for scroll-reveal and hover transitions
 - [x] **DSYS-04**: Libraries installed — motion, embla-carousel-react, yet-another-react-lightbox, tw-animate-css
-- [ ] **DSYS-05**: Admin dashboard remains functional after dark mode removal
+- [x] **DSYS-05**: Admin dashboard remains functional after dark mode removal
 
 ### Shared Components
 
@@ -92,7 +92,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | DSYS-02 | Phase 5 | Complete |
 | DSYS-03 | Phase 5 | Complete |
 | DSYS-04 | Phase 5 | Complete |
-| DSYS-05 | Phase 5 | Pending |
+| DSYS-05 | Phase 5 | Complete |
 | COMP-01 | Phase 6 | Pending |
 | COMP-02 | Phase 6 | Pending |
 | COMP-03 | Phase 6 | Pending |
