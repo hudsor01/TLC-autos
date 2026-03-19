@@ -41,11 +41,11 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
   2. The evolved navy/crimson palette produces text with at least 4.5:1 contrast ratio against all light backgrounds
   3. Admin dashboard pages (sidebar, tables, charts, forms) remain fully usable after dark mode removal
   4. Animation utility classes (fade-in, slide-up, hover transitions) can be applied to any element via CSS class names
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md — Evolve design system: light-only palette, animation utilities, library installation, homepage fix
+- [ ] 05-02-PLAN.md — Verify admin dashboard and full site rendering
 
 ### Phase 6: Shared Components
 **Goal**: Reusable components exist that all page redesigns will consume, eliminating duplication and establishing the visual language
@@ -134,7 +134,7 @@ Phases 5 and 6 are sequential (foundation, then components). Phases 7, 8, 9, 10 
 | 2. Admin Forms | v1.0 | 4/4 | Complete | 2026-03-18 |
 | 3. Admin Data & Dashboard | v1.0 | 3/3 | Complete | 2026-03-18 |
 | 4. Public Site | v1.0 | 2/2 | Complete | 2026-03-18 |
-| 5. Design System Foundation | v1.1 | 0/0 | Not started | - |
+| 5. Design System Foundation | v1.1 | 0/2 | Not started | - |
 | 6. Shared Components | v1.1 | 0/0 | Not started | - |
 | 7. Homepage Redesign | v1.1 | 0/0 | Not started | - |
 | 8. Inventory Page | v1.1 | 0/0 | Not started | - |
