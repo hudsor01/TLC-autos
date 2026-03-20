@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "bun scripts/seed.ts",
-    "postinstall": "lefthook install"
+    "postinstall": "lefthook install || true"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "1.3.3",
