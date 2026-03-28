@@ -43,3 +43,9 @@ next-env.d.ts
 
 # supabase
 supabase/.temp/
+
+# prisma generated
+src/generated/
+
+# sqlite
+*.db
