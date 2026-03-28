@@ -8,6 +8,7 @@ import {
   Users,
   UserPlus,
   Handshake,
+  TrendingUp,
   Settings,
   LogOut,
   Menu,
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/leads", label: "Leads", icon: UserPlus },
   { href: "/admin/deals", label: "Deals", icon: Handshake },
+  { href: "/admin/forecasting", label: "Forecasting", icon: TrendingUp },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
